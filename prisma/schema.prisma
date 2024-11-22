@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  sub       String       @id
+  name      String
+  picture   String?
+  schedules Attendance[]
+}
+
+model Schedule {
+  id          Int          @id @default(autoincrement())
+  date        DateTime
+  start       DateTime?
+  end         DateTime?
+  description String?
+  users       Attendance[]
+}
+
+enum Status {
+  PRESENT
+  ABSENT
+  LATE
+  UNDECIDED
+}
+
+model Attendance {
+  user       User     @relation(fields: [userId], references: [sub])
+  userId     String
+  schedule   Schedule @relation(fields: [scheduleId], references:[id])
+  scheduleId Int
+  status     Status
+
+  @@id([userId, scheduleId])
+}
