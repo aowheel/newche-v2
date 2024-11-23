@@ -25,9 +25,11 @@ export default function Auth() {
   };
 
   return (
-    <main>
+    <main
+      className="flex flex-col items-center"
+    >
       {status === "error" && (
-        <p className="text-red-500 p-4">ログインに問題が発生しました。再度お試しください。</p>
+        <p className="text-red-500 font-medium p-4">ログインに問題が発生しました。再度お試しください。</p>
       )}
       <Button
         onClick={() => startTransition(redirectToLineAuth)}

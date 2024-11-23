@@ -35,10 +35,16 @@ export default async function Home() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>
-              <Link href="https://www.titech.ac.jp/">キャンセル</Link>
+              <Link
+                href="https://www.titech.ac.jp/"
+                className="grow"
+              >キャンセル</Link>
             </AlertDialogCancel>
             <AlertDialogAction>
-              <Link href="/auth">続ける</Link>
+              <Link 
+                href="/auth"
+                className="grow"
+              >続ける</Link>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
