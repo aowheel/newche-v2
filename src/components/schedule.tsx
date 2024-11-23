@@ -41,13 +41,15 @@ import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import Loading from "@/app/loading";
 import { formatInTimeZone } from "date-fns-tz";
+import { add } from "date-fns";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
 }) {
-  const today = new Date();
+  let today = new Date();
+  today = add(today, { hours: 9 });
 
-  const booked = row.map(({ date }) => date);
+  const booked = row.map(({ date }) => add(date, { hours: 9 }));
 
   const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -56,31 +58,27 @@ export default function ViewSchedule({ row }: {
   const [attendace, setAttendance] = useState<(Schedule & AttendanceDetail)[]>([]);
 
   useEffect(() => {
-    const fetchAttendance = () => {
-      if (!date) setAttendance([])
-      else startTransition(async () => {
-        const schedule = await scheduleOnDate(date);
+    if (!date) setAttendance([])
+    else startTransition(async () => {
+      const schedule = await scheduleOnDate(date);
 
-        setAttendance(
-          await Promise.all(schedule.map(async ({ id, date, start, end, description }) => {
-            const { present, absent, late, undecided } = await overallAttendanceDetail(id);
+      setAttendance(
+        await Promise.all(schedule.map(async ({ id, date, start, end, description }) => {
+          const { present, absent, late, undecided } = await overallAttendanceDetail(id);
 
-            return {
-              date,
-              start: start || undefined,
-              end: end || undefined,
-              description: description || undefined,
-              present,
-              absent,
-              late,
-              undecided,
-            };
-          }))
-        );
-      })
-    }
-
-    fetchAttendance();
+          return {
+            date,
+            start: start || undefined,
+            end: end || undefined,
+            description: description || undefined,
+            present,
+            absent,
+            late,
+            undecided,
+          };
+        }))
+      );
+    })
   }, [date]);
 
   return (
