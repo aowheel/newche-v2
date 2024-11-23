@@ -41,7 +41,6 @@ import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import Loading from "@/app/loading";
 import { formatInTimeZone } from "date-fns-tz";
-import { ja } from "date-fns/locale";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]

@@ -3,7 +3,6 @@
 import { Status } from "@prisma/client";
 import prisma from "./prisma";
 import { formatInTimeZone } from "date-fns-tz";
-import { ja } from "date-fns/locale";
 
 export async function scheduleOnDate(date: Date) {
   return await prisma.schedule.findMany({
