@@ -1,7 +1,7 @@
 import { session } from "@/lib/auth";
 import { personalAttendance, scheduleFromNow } from "@/lib/data";
 import AttendanceSubmission from "./attendance-selection";
-import { formatDate } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 import { Calendar, Clock, Info } from "lucide-react";
 
@@ -24,7 +24,7 @@ export async function PersonalAttendance() {
             >
               <Calendar className="w-4 h-4 mx-1" />
               <span>
-                {formatDate(date, "MM/dd (eee)", { locale: ja })}
+                {formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja })}
               </span>
             </div>
             {(start || end) &&
@@ -34,12 +34,12 @@ export async function PersonalAttendance() {
               <Clock className="w-4 h-4 mx-1" />
               {start &&
               <span>
-                {formatDate(start, "HH:mm", { locale: ja })}
+                {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
               </span>}
               {(start || end) && <span>-</span>}
               {end &&
               <span>
-                {formatDate(end, "HH:mm", { locale: ja })}
+                {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
               </span>}
             </div>}
             {description &&

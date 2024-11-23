@@ -40,7 +40,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import Loading from "@/app/loading";
-import { formatDate } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 
 export default function ViewSchedule({ row }: {
@@ -123,12 +123,12 @@ export default function ViewSchedule({ row }: {
               <Clock className="w-4 h-4 mx-1" />
               {start &&
               <span>
-                {formatDate(start, "HH:mm", { locale: ja })}
+                {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
               </span>}
               <span>-</span>
               {end &&
               <span>
-                {formatDate(end, "HH:mm", { locale: ja })}
+                {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
               </span>}
             </div>}
             {description &&
@@ -241,7 +241,7 @@ export default function ViewSchedule({ row }: {
               <span
                 className="text-lg font-semibold"
               >
-                {formatDate(date, "MM/dd", { locale: ja })}
+                {formatInTimeZone(date, "Asia/Tokyo", "MM/dd")}
               </span>
               {(start || end) &&
               <div
@@ -249,12 +249,12 @@ export default function ViewSchedule({ row }: {
               >
                 {start &&
                 <span>
-                  {formatDate(start, "HH:mm", { locale: ja })}
+                  {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
                 </span>}
                 {(start || end) && <span>-</span>}
                 {end &&
                 <span>
-                  {formatDate(end, "HH:mm", { locale: ja })}
+                  {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
                 </span>}
               </div>}
               {description &&
@@ -490,11 +490,11 @@ export function EditSchedule() {
       const schedule = await scheduleFromNow();
 
       setRows(schedule.map(({ id, date, start, end, description }) => {
-        const jstDate = formatDate(date, "yyy-MM-dd", { locale: ja });
+        const jstDate = formatInTimeZone(date, "Asia/Tokyo", "yyyy-MM-dd");
 
-        const jstStart = start ? formatDate(start, "HH:mm", { locale: ja }) : "";
+        const jstStart = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : "";
 
-        const jstEnd = end ? formatDate(end, "HH:mm", { locale: ja }) : "";
+        const jstEnd = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : "";
 
         return {
           isEdited: false,

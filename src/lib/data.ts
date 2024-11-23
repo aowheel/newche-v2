@@ -2,7 +2,7 @@
 
 import { Status } from "@prisma/client";
 import prisma from "./prisma";
-import { formatDate } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 
 export async function scheduleOnDate(date: Date) {
@@ -12,7 +12,7 @@ export async function scheduleOnDate(date: Date) {
 }
 
 export async function scheduleFromNow() {
-  let _gte = formatDate(new Date(), "yyyy-MM-dd", { locale: ja });
+  let _gte = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
   _gte += "T00:00+09:00";
   const gte = new Date(_gte);
 
