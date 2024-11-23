@@ -1,6 +1,6 @@
 "use client";
 
-import { ListMinus, ListX, Plus } from "lucide-react";
+import { ListMinus, ListX, Plus, Undo2 } from "lucide-react";
 
 export function ViewGuide() {
   return (
@@ -12,7 +12,7 @@ export function ViewGuide() {
         <li>デフォルトで表示されるのは以降の日程で「出席」または「遅刻」と答えた人の一覧です。</li>
         <li>カレンダーの中で印がついているのは日程が存在する日付です。</li>
         <li>その日付を押すことで日程の詳細を見ることができます。</li>
-        <li>デフォルトの表示に戻す場合は選択した日付をもう一度押すか、「一覧に戻る」を押してください。</li>
+        <li>デフォルトの表示に戻す場合は選択した日付をもう一度押すか、<Undo2 className="w-4 mx-1 inline" />を押してください。</li>
       </ul>
     </div>
   );

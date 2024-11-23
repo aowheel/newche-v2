@@ -38,25 +38,28 @@ import { Calendar } from "./ui/calendar";
 import { Clock, Info, ListMinus, ListX, Plus, Undo2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { formatInTimeZone } from "date-fns-tz";
 import clsx from "clsx";
+import Loading from "@/app/loading";
+import { formatDate } from "date-fns";
+import { ja } from "date-fns/locale";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
 }) {
-  const [booked, setBooked] = useState<Date[]>([]);
+  const today = new Date();
 
-  useEffect(() => setBooked(row.map(({ date }) => date)), [row]);
+  const booked = row.map(({ date }) => date);
 
   const [date, setDate] = useState<Date | undefined>(undefined);
+
+  const [isPending, startTransition] = useTransition();
 
   const [attendace, setAttendance] = useState<(Schedule & AttendanceDetail)[]>([]);
 
   useEffect(() => {
-    const fetchAttendance = async () => {
-      setAttendance([]);
-
-      if (date) {
+    const fetchAttendance = () => {
+      if (!date) setAttendance([])
+      else startTransition(async () => {
         const schedule = await scheduleOnDate(date);
 
         setAttendance(
@@ -75,7 +78,7 @@ export default function ViewSchedule({ row }: {
             };
           }))
         );
-      }
+      })
     }
 
     fetchAttendance();
@@ -87,21 +90,24 @@ export default function ViewSchedule({ row }: {
         mode="single"
         selected={date}
         onSelect={setDate}
-        disabled={{ before: new Date() }}
+        disabled={{ before: today }}
+        today={today}
         modifiers={{ booked }}
         modifiersClassNames={{ booked: "my-booked-class" }}
         className="rounded-md border"
       />
       {date ?
+      (isPending ?
+      <div className="h-[400px] flex items-center">
+        <Loading />
+      </div> :
       <div className="w-full flex flex-col gap-y-4 text-slate-500">
         <div
-          className="flex flex-row-reverse"
+          className="flex justify-end px-2"
         >
           <button
-            className="flex items-center border-b-2 border-slate-500"
             onClick={() => setDate(undefined)}
           >
-            <span className="font-medium">一覧に戻る</span>
             <Undo2 />
           </button>
         </div>
@@ -117,19 +123,19 @@ export default function ViewSchedule({ row }: {
               <Clock className="w-4 h-4 mx-1" />
               {start &&
               <span>
-                {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
+                {formatDate(start, "HH:mm", { locale: ja })}
               </span>}
               <span>-</span>
               {end &&
               <span>
-                {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
+                {formatDate(end, "HH:mm", { locale: ja })}
               </span>}
             </div>}
             {description &&
             <div
               className="flex items-center gap-x-1"
             >
-              <Info className="w-4 h-4 mx-1" />
+              <Info className="shrink-0 w-4 h-4 mx-1" />
               <span>{description}</span>
             </div>}
             {present.length > 0 &&
@@ -222,7 +228,7 @@ export default function ViewSchedule({ row }: {
             </div>}
           </div>
         ))}
-      </div> :
+      </div>) :
       <div className="w-full flex flex-col gap-y-4">
         {row.map(({ date, start, end, description, attendance }, idx) => (
           <div
@@ -230,28 +236,30 @@ export default function ViewSchedule({ row }: {
             className="flex flex-col gap-y-2 p-2 border rounded-md"
           >
             <div
-              className="flex items-baseline gap-x-4"
+              className="flex flex-wrap items-baseline gap-x-2"
             >
               <span
-                className="text-lg font-bold"
+                className="text-lg font-semibold"
               >
-                {formatInTimeZone(date, "Asia/Tokyo", "MM/dd")}
+                {formatDate(date, "MM/dd", { locale: ja })}
               </span>
+              {(start || end) &&
               <div
                 className="flex items-center gap-x-1 font-medium"
               >
                 {start &&
                 <span>
-                  {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
+                  {formatDate(start, "HH:mm", { locale: ja })}
                 </span>}
                 {(start || end) && <span>-</span>}
                 {end &&
                 <span>
-                  {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
+                  {formatDate(end, "HH:mm", { locale: ja })}
                 </span>}
-              </div>
+              </div>}
+              {description &&
+              <span className="text-slate-500">{description}</span>}
             </div>
-            {description && <span>{description}</span>}
             {attendance.length > 0 &&
             <div
               className="flex flex-wrap gap-2"
@@ -482,11 +490,11 @@ export function EditSchedule() {
       const schedule = await scheduleFromNow();
 
       setRows(schedule.map(({ id, date, start, end, description }) => {
-        const jstDate = formatInTimeZone(date, "Asia/Tokyo", "yyyy-MM-dd");
+        const jstDate = formatDate(date, "yyy-MM-dd", { locale: ja });
 
-        const jstStart = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : "";
+        const jstStart = start ? formatDate(start, "HH:mm", { locale: ja }) : "";
 
-        const jstEnd = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : "";
+        const jstEnd = end ? formatDate(end, "HH:mm", { locale: ja }) : "";
 
         return {
           isEdited: false,

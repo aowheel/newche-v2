@@ -21,7 +21,7 @@ export default function AttendanceSubmission({
 
   return (
     <div
-      className="flex items-center justify-center gap-x-2 font-medium text-lg"
+      className="flex items-center justify-center gap-x-2 font-medium text-lg text-slate-700"
     >
       <input
         id={`0-${scheduleId}`}

@@ -1,14 +1,16 @@
 import { session } from "@/lib/auth";
 import { personalAttendance, scheduleFromNow } from "@/lib/data";
-import { formatInTimeZone } from "date-fns-tz";
 import AttendanceSubmission from "./attendance-selection";
+import { formatDate } from "date-fns";
+import { ja } from "date-fns/locale";
+import { Calendar, Clock, Info } from "lucide-react";
 
 export async function PersonalAttendance() {
   const { sub } = await session();
   const schedule = await scheduleFromNow();
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
+    <div className="w-full flex flex-col gap-y-4 text-slate-500">
       {schedule.map(async ({ id, date, start, end, description }, idx) => {
         const status = await personalAttendance(sub, id);
 
@@ -18,28 +20,35 @@ export async function PersonalAttendance() {
             className="flex flex-col gap-y-2 p-2 border rounded-md"
           >
             <div
-              className="flex items-baseline gap-x-4"
+              className="flex items-center gap-x-1"
             >
-              <span
-                className="text-lg font-bold"
-              >
-                {formatInTimeZone(date, "Asia/Tokyo", "yyyy/MM/dd EEE")}
+              <Calendar className="w-4 h-4 mx-1" />
+              <span>
+                {formatDate(date, "MM/dd (eee)", { locale: ja })}
               </span>
-              <div
-                className="flex items-center gap-x-1 font-medium"
-              >
-                {start &&
-                <span>
-                  {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
-                </span>}
-                {(start || end) && <span>-</span>}
-                {end &&
-                <span>
-                  {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
-                </span>}
-              </div>
             </div>
-            {description && <span>{description}</span>}
+            {(start || end) &&
+            <div
+              className="flex items-center gap-x-1"
+            >
+              <Clock className="w-4 h-4 mx-1" />
+              {start &&
+              <span>
+                {formatDate(start, "HH:mm", { locale: ja })}
+              </span>}
+              {(start || end) && <span>-</span>}
+              {end &&
+              <span>
+                {formatDate(end, "HH:mm", { locale: ja })}
+              </span>}
+            </div>}
+            {description &&
+            <div
+              className="flex items-center gap-x-1"
+            >
+              <Info className="shrink-0 w-4 h-4 mx-1" />
+              <span>{description}</span>
+            </div>}
             <AttendanceSubmission
               userId={sub}
               scheduleId={id}
