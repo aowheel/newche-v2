@@ -1,9 +1,10 @@
 import { session } from "@/lib/auth";
 import { personalAttendance, scheduleFromNow } from "@/lib/data";
-import AttendanceSubmission from "./attendance-selection";
+import SubmitAttendance from "./response";
 import { formatInTimeZone } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 import { Calendar, Clock, Info } from "lucide-react";
+import clsx from "clsx";
 
 export async function PersonalAttendance() {
   const { sub } = await session();
@@ -17,7 +18,9 @@ export async function PersonalAttendance() {
         return (
           <div
             key={idx}
-            className="flex flex-col gap-y-2 p-2 border rounded-md"
+            className={clsx("flex flex-col gap-y-2 p-2 border rounded-md", {
+              "border-orange-500": !status
+            })}
           >
             <div
               className="flex items-center gap-x-1"
@@ -49,7 +52,7 @@ export async function PersonalAttendance() {
               <Info className="shrink-0 w-4 h-4 mx-1" />
               <span>{description}</span>
             </div>}
-            <AttendanceSubmission
+            <SubmitAttendance
               userId={sub}
               scheduleId={id}
               status={status}

@@ -4,7 +4,7 @@ import { upsertAttendance } from "@/lib/data";
 import { Status } from "@prisma/client";
 import { useTransition } from "react";
 
-export default function AttendanceSubmission({
+export default function SubmitAttendance({
   userId,
   scheduleId,
   status

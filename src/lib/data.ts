@@ -189,6 +189,28 @@ export async function overallAttendanceDetail(scheduleId: number): Promise<Atten
   };
 }
 
+export async function unsubmitted() {
+  let _gte = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
+  _gte += "T00:00+09:00";
+  const gte = new Date(_gte);
+
+  const all = await prisma.schedule.count({
+    where: {
+      date: { gte }
+    }
+  });
+
+  const submitted = await prisma.attendance.count({
+    where: {
+      schedule: {
+        date: { gte }
+      }
+    }
+  });
+
+  return all - submitted;
+}
+
 export async function personalAttendance(
   userId: string,
   scheduleId: number

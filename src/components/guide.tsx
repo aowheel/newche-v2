@@ -9,10 +9,14 @@ export function ViewGuide() {
     >
       <h3>使い方ガイド</h3>
       <ul>
-        <li>デフォルトで表示されるのは以降の日程で「出席」または「遅刻」と答えた人の一覧です。</li>
-        <li>カレンダーの中で印がついているのは日程が存在する日付です。</li>
-        <li>その日付を押すことで日程の詳細を見ることができます。</li>
-        <li>デフォルトの表示に戻す場合は選択した日付をもう一度押すか、<Undo2 className="w-4 mx-1 inline" />を押してください。</li>
+        <li>デフォルトで表示されるのは今日以降の日程で「出席」または「遅刻」と答えた人の一覧です。</li>
+        <li>
+          カレンダーの中で
+          <span className="inline-block w-4 h-4 mx-1 rounded-full bg-orange-500"></span>
+          がついているのは日程が存在する日付です。
+        </li>
+        <li>その日付をタップすることで日程の詳細を見ることができます。</li>
+        <li>デフォルトの表示に戻す場合は選択した日付をもう一度タップするか、<Undo2 className="w-4 mx-1 inline" />を押してください。</li>
       </ul>
     </div>
   );
@@ -28,7 +32,8 @@ export function AttendanceGuide() {
         <li>出席、欠席、遅刻、未定のいずれかを選択します。</li>
         <li>その日程が近づくと選択内容がBotを通じてLINEに通知されます。</li>
         <li>
-          <span className="rounded-full mx-1 px-2 py-1 text-sm bg-slate-900 text-white">出欠席</span>の右上に表示される数字は、以降のすべての日程のうち、未選択の日程の数です。
+          <span className="rounded-full mx-1 px-2 py-1 text-sm bg-slate-900 text-white">出欠席</span>
+          の右上に表示される数字は、以降のすべての日程のうち、未選択の日程の数です。
         </li>
       </ul>
     </div>
