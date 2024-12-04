@@ -4,6 +4,18 @@ import { Status } from "@prisma/client";
 import prisma from "./prisma";
 import { formatInTimeZone } from "date-fns-tz";
 
+export async function upsertUser(
+  sub: string,
+  name: string,
+  picture?: string
+) {
+  await prisma.user.upsert({
+    where: { sub },
+    update: { name, picture },
+    create: { sub, name, picture }
+  });
+}
+
 export async function scheduleOnDate(date: Date) {
   return await prisma.schedule.findMany({
     where: { date }

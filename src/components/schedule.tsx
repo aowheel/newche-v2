@@ -40,16 +40,15 @@ import { useEffect, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import Loading from "@/app/loading";
-import { formatInTimeZone } from "date-fns-tz";
-import { add } from "date-fns";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
+import { startOfToday } from "date-fns";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
 }) {
-  let today = new Date();
-  today = add(today, { hours: 9 });
+  const today = toZonedTime(new Date(), "Asia/Tokyo");
 
-  const booked = row.map(({ date }) => add(date, { hours: 9 }));
+  const booked = row.map(({ date }) => toZonedTime(date, "Asia/Tokyo"));
 
   const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -87,7 +86,7 @@ export default function ViewSchedule({ row }: {
         mode="single"
         selected={date}
         onSelect={setDate}
-        disabled={{ before: today }}
+        disabled={{ before: startOfToday() }}
         today={today}
         modifiers={{ booked }}
         modifiersClassNames={{ booked: "my-booked-class" }}

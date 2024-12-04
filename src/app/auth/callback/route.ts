@@ -1,5 +1,5 @@
 import { ironSession, User } from "@/lib/auth";
-import prisma from "@/lib/prisma";
+import { upsertUser } from "@/lib/data";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
@@ -44,11 +44,7 @@ export async function GET(req: NextRequest) {
         if (res.ok) {
           const { sub, name, picture } = await res.json() as User;
 
-          await prisma.user.upsert({
-            where: { sub },
-            update: { name, picture },
-            create: { sub, name, picture }
-          });
+          await upsertUser(sub, name, picture);
 
           const session = await ironSession();
           session.sub = sub;
