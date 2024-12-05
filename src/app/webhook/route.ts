@@ -15,6 +15,10 @@ export async function POST(req: Request) {
   const headersList = await headers();
   const received = headersList.get("x-line-signature");
 
+  console.log(body);
+  console.log(req.headers.get("x-line-signature"));
+  console.log(received, " : ", generated);
+
   if (received !== generated) {
     return new NextResponse("Invalid signature", { status: 400 });
   }

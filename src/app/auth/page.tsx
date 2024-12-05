@@ -16,7 +16,7 @@ export default function Auth() {
   const redirectToLineAuth = async () => {
     const state = await generateState(10);
 
-    const client_id = process.env.NEXT_PUBLIC_LINE_CLIENT_ID;
+    const client_id = process.env.NEXT_PUBLIC_LINE_LOGIN_ID;
     const redirect_uri = process.env.NEXT_PUBLIC_LINE_REDIRECT_URI;
 
     if (client_id && redirect_uri) router.push(
