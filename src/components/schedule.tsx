@@ -34,14 +34,15 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
-import { Calendar } from "./ui/calendar";
-import { Clock, Info, ListMinus, ListX, Plus, Undo2 } from "lucide-react";
+import { Calendar as DatePicker } from "./ui/calendar";
+import { Calendar, Clock, Info, ListMinus, ListX, Plus, Undo2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import Loading from "@/app/loading";
 import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import { startOfToday } from "date-fns";
+import { ja } from "date-fns/locale";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
@@ -82,7 +83,7 @@ export default function ViewSchedule({ row }: {
 
   return (
     <>
-      <Calendar
+      <DatePicker
         mode="single"
         selected={date}
         onSelect={setDate}
@@ -97,20 +98,28 @@ export default function ViewSchedule({ row }: {
       <div className="h-[400px] flex items-center">
         <Loading />
       </div> :
-      <div className="w-full flex flex-col gap-y-4 text-slate-500">
+      <div className="w-full flex flex-col divide-y text-slate-500">
         <div
-          className="flex justify-end px-2"
+          className="flex items-center justify-between"
         >
+          <div
+            className="flex items-center gap-x-1 p-1 font-medium text-xl"
+          >
+            <Calendar className="w-5 h-5 mx-1" />
+            <span>
+              {formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja })}
+            </span>
+          </div>
           <button
             onClick={() => setDate(undefined)}
           >
-            <Undo2 />
+            <Undo2 className="mx-2" />
           </button>
         </div>
         {attendace.map(({ start, end, description, present, absent, late, undecided }, idx) => (
           <div
             key={idx}
-            className="flex flex-col gap-y-2 p-2 border rounded-md"
+            className="flex flex-col gap-y-2 p-2"
           >
             {(start || end) &&
             <div
@@ -145,7 +154,7 @@ export default function ViewSchedule({ row }: {
                 {present.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 text-slate-800"
+                    className="flex items-center gap-x-2 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -167,7 +176,7 @@ export default function ViewSchedule({ row }: {
                 {absent.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 text-slate-800"
+                    className="flex items-center gap-x-2 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -189,7 +198,7 @@ export default function ViewSchedule({ row }: {
                 {late.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 text-slate-800"
+                    className="flex items-center gap-x-2 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -211,7 +220,7 @@ export default function ViewSchedule({ row }: {
                 {undecided.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 text-slate-800"
+                    className="flex items-center gap-x-2 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -225,37 +234,42 @@ export default function ViewSchedule({ row }: {
           </div>
         ))}
       </div>) :
-      <div className="w-full flex flex-col gap-y-4">
+      <div className="w-full flex flex-col gap-y-4 text-slate-500">
         {row.map(({ date, start, end, description, attendance }, idx) => (
           <div
             key={idx}
             className="flex flex-col gap-y-2 p-2 border rounded-md"
           >
             <div
-              className="flex flex-wrap items-baseline gap-x-2"
+              className="flex items-center gap-x-1"
             >
-              <span
-                className="text-lg font-semibold"
-              >
-                {formatInTimeZone(date, "Asia/Tokyo", "MM/dd")}
+              <Calendar className="w-4 h-4 mx-1" />
+              <span>
+                {formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja })}
               </span>
-              {(start || end) &&
-              <div
-                className="flex items-center gap-x-1 font-medium"
-              >
-                {start &&
-                <span>
-                  {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
-                </span>}
-                {(start || end) && <span>-</span>}
-                {end &&
-                <span>
-                  {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
-                </span>}
-              </div>}
-              {description &&
-              <span className="text-slate-500">{description}</span>}
             </div>
+            {(start || end) &&
+            <div
+              className="flex items-center gap-x-1"
+            >
+              <Clock className="w-4 h-4 mx-1" />
+              {start &&
+              <span>
+                {formatInTimeZone(start, "Asia/Tokyo", "HH:mm")}
+              </span>}
+              {(start || end) && <span>-</span>}
+              {end &&
+              <span>
+                {formatInTimeZone(end, "Asia/Tokyo", "HH:mm")}
+              </span>}
+            </div>}
+            {description &&
+            <div
+              className="flex items-center gap-x-1"
+            >
+              <Info className="shrink-0 w-4 h-4 mx-1" />
+              <span>{description}</span>
+            </div>}
             {attendance.length > 0 &&
             <div
               className="flex flex-wrap gap-2"

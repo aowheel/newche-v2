@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Ellipsis } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -57,8 +57,9 @@ export default function Navi() {
         <li>
           <Popover>
             <PopoverTrigger asChild>
-              <div className="px-4 py-2">
-                <Ellipsis />
+              <div className="flex items-end rounded-full px-4 py-2 hover:bg-slate-100 transition">
+                その他
+                <ChevronDown className="w-5 h-5" />
               </div>
             </PopoverTrigger>
             <PopoverContent>

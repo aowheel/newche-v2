@@ -1,7 +1,6 @@
 import { ironSession, User } from "@/lib/auth";
 import { upsertUser } from "@/lib/data";
-import { redirect } from "next/navigation";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
@@ -53,11 +52,11 @@ export async function GET(req: NextRequest) {
 
           await session.save();
 
-          return redirect("/view");
+          return NextResponse.redirect(new URL("/view", req.url));
         }
       }
     }
   }
 
-  return redirect("/auth?status=error");
+  return NextResponse.redirect(new URL("/auth?status=error", req.url));
 }

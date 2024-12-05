@@ -33,7 +33,7 @@ export function AttendanceGuide() {
         <li>その日程が近づくと選択内容がBotを通じてLINEに通知されます。</li>
         <li>
           <span className="rounded-full mx-1 px-2 py-1 text-sm bg-slate-900 text-white">出欠席</span>
-          の右上に表示される数字は、以降のすべての日程のうち、未選択の日程の数です。
+          の右上に表示される数字は、今日以降のすべての日程のうち、あなたが未選択の日程の数です。
         </li>
       </ul>
     </div>
@@ -52,7 +52,7 @@ export function ManageGuide() {
         <li><Plus className="w-4 mx-1 inline"/>ボタンで行を追加します。</li>
         <li>日付が必須、開始時間、終了時間、詳細がオプションです。</li>
         <li><ListMinus className="w-4 mx-1 inline" />ボタンで行を削除できます。</li>
-        <li>すべてを入力後、送信ボタンを押してデータを送信します。</li>
+        <li>入力後、送信ボタンを押してデータを送信します。</li>
         <li>入力内容はBotを通じてLINEに送信されます。</li>
       </ul>
       <h4>編集</h4>

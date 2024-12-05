@@ -1,8 +1,9 @@
 "use server";
 
-import { Status } from "@prisma/client";
-import prisma from "./prisma";
+import { PrismaClient, Status } from "@prisma/client";
 import { formatInTimeZone } from "date-fns-tz";
+
+const prisma = new PrismaClient();
 
 export async function upsertUser(
   sub: string,
@@ -18,7 +19,8 @@ export async function upsertUser(
 
 export async function scheduleOnDate(date: Date) {
   return await prisma.schedule.findMany({
-    where: { date }
+    where: { date },
+    orderBy: { start: "asc" }
   });
 }
 
@@ -189,6 +191,30 @@ export async function overallAttendanceDetail(scheduleId: number): Promise<Atten
   };
 }
 
+export async function personalAttendance(
+  userId: string,
+  scheduleId: number
+) {
+  const { status } =  await prisma.attendance.findUnique({
+    where: { userId_scheduleId: { userId, scheduleId } },
+    select: { status: true }
+  }) || { status: null };
+
+  return status;
+}
+
+export async function upsertAttendance(
+  userId: string,
+  scheduleId: number,
+  status: Status
+) {
+  await prisma.attendance.upsert({
+    where: { userId_scheduleId: { userId, scheduleId } },
+    update: { status },
+    create: { userId, scheduleId, status }
+  });
+}
+
 export async function unsubmitted() {
   let _gte = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
   _gte += "T00:00+09:00";
@@ -211,26 +237,14 @@ export async function unsubmitted() {
   return all - submitted;
 }
 
-export async function personalAttendance(
-  userId: string,
-  scheduleId: number
-) {
-  const { status } =  await prisma.attendance.findUnique({
-    where: { userId_scheduleId: { userId, scheduleId } },
-    select: { status: true }
-  }) || { status: null };
-
-  return status;
+export async function group() {
+  return await prisma.group.findMany();
 }
 
-export async function upsertAttendance(
-  userId: string,
-  scheduleId: number,
-  status: Status
-) {
-  await prisma.attendance.upsert({
-    where: { userId_scheduleId: { userId, scheduleId } },
-    update: { status },
-    create: { userId, scheduleId, status }
+export async function upsertGroup(id: string) {
+  await prisma.group.upsert({
+    where: { id },
+    update: {},
+    create: { id }
   });
 }
