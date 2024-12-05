@@ -1,6 +1,6 @@
 import { session } from "@/lib/auth";
 import { personalAttendance, scheduleFromNow } from "@/lib/data";
-import SubmitAttendance from "./response";
+import SubmitAttendance from "./selector";
 import { formatInTimeZone } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 import { Calendar, Clock, Info } from "lucide-react";

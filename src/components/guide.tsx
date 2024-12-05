@@ -66,3 +66,15 @@ export function ManageGuide() {
     </div>
   );
 }
+
+export function FriendGuide() {
+  return (
+    <div
+      className="prose m-4 p-4 bg-slate-100 rounded-xl"
+    >
+      <h2>別のグループでのNewcheの利用</h2>
+      <p>Newcheを友だち追加して別のグループトークに招待することで、データを共有しつつNewcheの機能を利用することができます。</p>
+      <strong>無関係なグループトークには招待しないでください。</strong>
+    </div>
+  );
+}

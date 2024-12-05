@@ -20,7 +20,10 @@ export async function upsertUser(
 export async function scheduleOnDate(date: Date) {
   return await prisma.schedule.findMany({
     where: { date },
-    orderBy: { start: "asc" }
+    orderBy:  [
+      { end: { sort: "asc", nulls: "first" } },
+      { start: { sort: "asc", nulls: "first" } }
+    ]
   });
 }
 

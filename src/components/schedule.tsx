@@ -41,8 +41,8 @@ import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import Loading from "@/app/loading";
 import { formatInTimeZone, toZonedTime } from "date-fns-tz";
-import { startOfToday } from "date-fns";
 import { ja } from "date-fns/locale";
+import { notifyCreatedSchedule, notifyUpdatedSchedule } from "@/lib/bot";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
@@ -87,10 +87,9 @@ export default function ViewSchedule({ row }: {
         mode="single"
         selected={date}
         onSelect={setDate}
-        disabled={{ before: startOfToday() }}
         today={today}
         modifiers={{ booked }}
-        modifiersClassNames={{ booked: "my-booked-class" }}
+        modifiersClassNames={{ booked: "booked" }}
         className="rounded-md border"
       />
       {date ?
@@ -361,7 +360,10 @@ export function NewSchedule() {
 
   const submitSchedule = async () => {
     const [valid, invalid, schedule] = parseSchedule();
-    await createSchedule(schedule);
+    await Promise.all([
+      createSchedule(schedule),
+      notifyCreatedSchedule(schedule)
+    ]);
     toast({
       title: "データを送信しました。",
       description: `有効な行: ${valid}、無効な行: ${invalid}`,
@@ -580,8 +582,11 @@ export function EditSchedule() {
 
   const submitScheduleChanges = async () => {
     const [valid, invalid, ids, schedule] = parseSchedule();
-    await updateSchedule(schedule);
-    await deleteSchedule(ids);
+    await Promise.all([
+      updateSchedule(schedule),
+      schedule.length > 0 ? notifyUpdatedSchedule(schedule) : null,
+      deleteSchedule(ids)
+    ]);
     toast({
       title: "データを送信しました。",
       description: `有効な行: ${valid}, 無効な行: ${invalid}`,

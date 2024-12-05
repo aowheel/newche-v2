@@ -1,4 +1,4 @@
-import Nav from "@/components/nav";
+import Navigator from "@/components/navigator";
 import User from "@/components/user";
 import { ReactNode } from "react";
 
@@ -12,7 +12,7 @@ export default function DashboardLayout({
       <header
         className="w-full flex items-center justify-between p-4"
       >
-        <Nav />
+        <Navigator />
         <User />
       </header>
       <main

@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Link from "next/link";
 import { unsubmitted } from "@/lib/data";
 
-export default function Navi() {
+export default function Navigator() {
   const router = useRouter();
   const path = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -72,13 +72,21 @@ export default function Navi() {
                     className="px-1 text-sm text-slate-400"
                   >新しい日程の作成と既存の日程の編集</span>
                 </Link>
-                <Link className="flex flex-col p-1 hover:bg-slate-100" href="/auth">
+                <Link className="flex flex-col p-1 rounded hover:bg-slate-100" href="/auth">
                   <span
                     className="font-semibold"
                   >再ログイン</span>
                   <span
                     className="px-1 text-sm text-slate-400"
                   >LINEのプロフィールを変更した場合など</span>
+                </Link>
+                <Link className="flex flex-col p-1 rounded hover:bg-slate-100" href="/friend">
+                  <span
+                    className="font-semibold"
+                  >友だち追加</span>
+                  <span
+                    className="px-1 text-sm text-slate-400"
+                  >Botを別のグループトークで利用</span>
                 </Link>
               </div>
             </PopoverContent>

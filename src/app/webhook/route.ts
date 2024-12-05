@@ -41,7 +41,7 @@ export async function POST(req: Request) {
             altText: "グループへの招待ありがとうございます🙇",
             template: {
               type: "buttons",
-              text: "グループへの招待ありがとうございます🙇\nNewcheはスケジュール管理に役立つBotです🤖\n\nログインすることで日程の確認と参加可否の提出ができます🎈",
+              text: "グループへの招待ありがとうございます🙇\nNewcheはスケジュール管理に役立つBotです🤖\n\nログインすることで日程の確認と参加可否の提出ができます。",
               actions: [{
                 type: "uri",
                 label: "はじめる",
@@ -80,10 +80,10 @@ export async function POST(req: Request) {
             },
             {
               type: "template",
-              altText: "ログインすることで日程の確認と参加可否の提出ができます🎈",
+              altText: "ログインすることで日程の確認と参加可否の提出ができます。",
               template: {
                 type: "buttons",
-                text: "ログインすることで日程の確認と参加可否の提出ができます🎈",
+                text: "ログインすることで日程の確認と参加可否の提出ができます。",
                 actions: [{
                   type: "uri",
                   label: "はじめる",
