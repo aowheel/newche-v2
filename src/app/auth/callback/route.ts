@@ -12,8 +12,8 @@ export async function GET(req: NextRequest) {
 
   if (code && state && storedState === state) {
     const redirect_uri = process.env.NEXT_PUBLIC_LINE_REDIRECT_URI;
-    const client_id = process.env.NEXT_PUBLIC_LINE_CLIENT_ID;
-    const client_secret = process.env.LINE_CLIENT_SECRET;
+    const client_id = process.env.NEXT_PUBLIC_LINE_LOGIN_ID;
+    const client_secret = process.env.LINE_LOGIN_SECRET;
 
     if (redirect_uri && client_id && client_secret) {
       let res = await fetch("https://api.line.me/oauth2/v2.1/token", {

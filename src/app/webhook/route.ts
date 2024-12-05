@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const client_secret = process.env.LINE_CLIENT_SECRET || "";
+  const client_secret = process.env.LINE_BOT_SECRET || "";
   const body = await req.text();
   const generated = crypto
     .createHmac("SHA256", client_secret)
@@ -122,9 +122,3 @@ export async function POST(req: Request) {
 
   return new NextResponse("Success", { status: 200 });
 }
-
-export const config = {
-  api: {
-    bodyParser: false
-  },
-};
