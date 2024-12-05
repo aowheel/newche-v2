@@ -1,7 +1,7 @@
 import { token } from "@/lib/bot";
 import { upsertGroup } from "@/lib/data";
 import crypto from "crypto";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const client_secret = process.env.LINE_CLIENT_SECRET || "";
