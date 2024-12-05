@@ -33,7 +33,7 @@ export function AttendanceGuide() {
         <li>その日程が近づくと選択内容がBotを通じてLINEに通知されます。</li>
         <li>
           <span className="rounded-full mx-1 px-2 py-1 text-sm bg-slate-900 text-white">出欠席</span>
-          の右上に表示される数字は、今日以降のすべての日程のうち、あなたが未選択の日程の数です。
+          の右上に表示される数字は、今日以降のすべての日程のうち、あなたが未選択のものの数です。
         </li>
       </ul>
     </div>

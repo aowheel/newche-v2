@@ -3,7 +3,7 @@
 import { messagingApi } from '@line/bot-sdk';
 const { MessagingApiClient } = messagingApi;
 
-export async function token() {
+async function token() {
   const client_id = process.env.NEXT_PUBLIC_LINE_BOT_ID;
   const client_secret = process.env.LINE_BOT_SECRET;
 
@@ -27,11 +27,9 @@ export async function token() {
   }
 }
 
-async function BotClient() {
+export async function BotClient() {
   const channelAccessToken = await token();
   return new MessagingApiClient({ channelAccessToken });
 }
 
-export async function createSchedule() {
-  await BotClient();
-}
+export async function createSchedule() {}

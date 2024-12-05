@@ -1,4 +1,4 @@
-import { token } from "@/lib/bot";
+import { BotClient } from "@/lib/bot";
 import { upsertGroup } from "@/lib/data";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
@@ -21,52 +21,37 @@ export async function POST(req: Request) {
 
   for (const event of events) {
     if (event.type === "follow") {
-      await fetch("https://api.line.me/v2/bot/message/reply", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${await token()}`
-        },
-        body: JSON.stringify({
-          replyToken: event.replyToken,
-          messages: [{
-            type: "text",
-            text: "友だち追加ありがとうございます🙇\n\nNewcheはグループトーク専用のBotです。グループへ招待することで利用を開始します🎈"
-          }]
-        })
+      const client = await BotClient();
+      await client.replyMessage({
+        replyToken: event.replyToken,
+        messages: [{
+          type: "text",
+          text: "友だち追加ありがとうございます🙇\n\nNewcheはグループトーク専用のBotです。グループへ招待して利用を開始します🎈"
+        }]
       });
-    }
-
-    if (event.type === "join") {
+    } else if (event.type === "join") {
       if (event.source.type === "group") {
         await upsertGroup(event.source.groupId);
-        await fetch("https://api.line.me/v2/bot/message/reply", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${await token()}`
-          },
-          body: JSON.stringify({
-            replyToken: event.replyToken,
-            messages: [{
-              type: "template",
-              altText: "グループへの招待ありがとうございます🙇",
-              template: {
-                type: "buttons",
-                text: "グループへの招待ありがとうございます🙇\nNewcheは日程管理のBotです🤖\n\nLINEでログインしてはじめます🔽",
-                actions: [{
-                  type: "uri",
-                  label: "はじめる",
-                  uri: "https://newche-v2.vercel.app/auth"
-                }]
-              }
-            }]
-          })
+
+        const client = await BotClient();
+        await client.replyMessage({
+          replyToken: event.replyToken,
+          messages: [{
+            type: "template",
+            altText: "グループへの招待ありがとうございます🙇",
+            template: {
+              type: "buttons",
+              text: "グループへの招待ありがとうございます🙇\nNewcheはスケジュール管理に役立つBotです🤖\n\nログインすることで日程の確認と参加可否の提出ができます🎈",
+              actions: [{
+                type: "uri",
+                label: "はじめる",
+                uri: "https://newche-v2.vercel.app/auth"
+              }]
+            }
+          }]
         });
       }
-    }
-
-    if (event.type === "memberJoined") {
+    } else if (event.type === "memberJoined") {
       if (event.source.type === "group") {
         const members = event.joined.members as any[];
 
@@ -82,37 +67,31 @@ export async function POST(req: Request) {
             }
           };
         });
-        welcomeMessage += "さん、ようこそ🎉\nNewcheは日程管理のBotです🤖";
+        welcomeMessage += "さん、ようこそ🎉\nNewcheはスケジュール管理に役立つBotです🤖";
 
-        await fetch("https://api.line.me/v2/bot/message/reply", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${await token()}`
-          },
-          body: JSON.stringify({
-            replyToken: event.replyToken,
-            messages: [
-              {
-                type: "textV2",
-                text: welcomeMessage,
-                substitution
-              },
-              {
-                type: "template",
-                altText: "LINEでログインしてはじめます🔽",
-                template: {
-                  type: "buttons",
-                  text: "LINEでログインしてはじめます🔽",
-                  actions: [{
-                    type: "uri",
-                    label: "はじめる",
-                    uri: "https://newche-v2.vercel.app/auth"
-                  }]
-                }
+        const client = await BotClient();
+        await client.replyMessage({
+          replyToken: event.replyToken,
+          messages: [
+            {
+              type: "textV2",
+              text: welcomeMessage,
+              substitution
+            },
+            {
+              type: "template",
+              altText: "ログインすることで日程の確認と参加可否の提出ができます🎈",
+              template: {
+                type: "buttons",
+                text: "ログインすることで日程の確認と参加可否の提出ができます🎈",
+                actions: [{
+                  type: "uri",
+                  label: "はじめる",
+                  uri: "https://newche-v2.vercel.app/auth"
+                }]
               }
-            ]
-          })
+            }
+          ]
         });
       }
     }
