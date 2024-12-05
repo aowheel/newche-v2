@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     .digest("base64");
 
   if (signature !== req.headers.get("X-Line-Signature")) {
-    return new NextResponse("Invalid signature", { status: 400 });
+    return new NextResponse("Invalid signature", { status: 200 });
   }
 
   const { events } = await req.json();
