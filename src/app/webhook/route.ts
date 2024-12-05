@@ -1,10 +1,11 @@
 import { token } from "@/lib/bot";
 import { upsertGroup } from "@/lib/data";
 import crypto from "crypto";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const received = req.headers.get("x-line-signature");
+
   const client_secret = process.env.LINE_BOT_SECRET || "";
   const body = await req.text();
   const generated = crypto
@@ -12,18 +13,11 @@ export async function POST(req: Request) {
     .update(body)
     .digest("base64");
 
-  const headersList = await headers();
-  const received = headersList.get("x-line-signature");
-
-  console.log(body);
-  console.log(req.headers.get("x-line-signature"));
-  console.log(received, " : ", generated);
-
   if (received !== generated) {
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
-  const { events } = await req.json();
+  const { events } = await JSON.parse(body);
 
   for (const event of events) {
     if (event.type === "follow") {
