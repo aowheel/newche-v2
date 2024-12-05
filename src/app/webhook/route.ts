@@ -1,18 +1,22 @@
 import { token } from "@/lib/bot";
 import { upsertGroup } from "@/lib/data";
 import crypto from "crypto";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const client_secret = process.env.LINE_CLIENT_SECRET || "";
   const body = await req.text();
-  const signature = crypto
+  const generated = crypto
     .createHmac("SHA256", client_secret)
     .update(body)
     .digest("base64");
 
-  if (signature !== req.headers.get("X-Line-Signature")) {
-    return new NextResponse("Invalid signature", { status: 200 });
+  const headersList = await headers();
+  const received = headersList.get("x-line-signature");
+
+  if (received !== generated) {
+    return new NextResponse("Invalid signature", { status: 400 });
   }
 
   const { events } = await req.json();
@@ -118,3 +122,9 @@ export async function POST(req: Request) {
 
   return new NextResponse("Success", { status: 200 });
 }
+
+export const config = {
+  api: {
+    bodyParser: false
+  },
+};
