@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function User() {
   const { name, picture } = await session();
-  if (!name) return redirect("/auth");
+  if (!name) return redirect("/login");
 
   return (
     <Avatar>

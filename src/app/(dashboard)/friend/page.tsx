@@ -6,7 +6,7 @@ export default function Friend() {
     <>
       <FriendGuide />
       <Link
-        href="https://line.me/R/ti/p/%40747qtvue"
+        href="https://line.me/R/ti/p/@747qtvue"
         className="px-4 py-2 rounded-full bg-slate-900 text-white transition hover:bg-opacity-75"
       >友だち追加</Link>
     </>

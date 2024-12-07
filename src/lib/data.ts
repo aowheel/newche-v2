@@ -5,6 +5,12 @@ import { formatInTimeZone } from "date-fns-tz";
 
 const prisma = new PrismaClient();
 
+export async function userExists(sub: string) {
+  return await prisma.user.count({
+    where: { sub }
+  }) > 0;
+}
+
 export async function upsertUser(
   sub: string,
   name: string,
@@ -192,6 +198,27 @@ export async function overallAttendanceDetail(scheduleId: number): Promise<Atten
       picture: user.picture || undefined
     }))
   };
+}
+
+export async function countPresentOrLate(scheduleId: number) {
+  return await prisma.attendance.count({
+    where: {
+      scheduleId,
+      status: { in: ["PRESENT", "LATE"] }
+    }
+  });
+}
+
+export async function undecided(scheduleId: number) {
+  return await prisma.attendance.findMany({
+    where: {
+      scheduleId,
+      status: "UNDECIDED"
+    },
+    select: {
+      userId: true
+    }
+  });
 }
 
 export async function personalAttendance(

@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import Link from "next/link";
 import { unsubmitted } from "@/lib/data";
 
 export default function Navigator() {
@@ -64,30 +63,42 @@ export default function Navigator() {
             </PopoverTrigger>
             <PopoverContent>
               <div className="flex flex-col gap-y-1 text-slate-600">
-                <Link className="flex flex-col p-1 rounded hover:bg-slate-100" href="/manage">
+                <button
+                  className="flex flex-col p-1 rounded hover:bg-slate-100"
+                  onClick={() => startTransition(() => router.push("/manage"))}
+                  disabled={isPending}
+                >
                   <span
                     className="font-semibold"
                   >新規・編集</span>
                   <span
                     className="px-1 text-sm text-slate-400"
                   >新しい日程の作成と既存の日程の編集</span>
-                </Link>
-                <Link className="flex flex-col p-1 rounded hover:bg-slate-100" href="/auth">
+                </button>
+                <button
+                  className="flex flex-col p-1 rounded hover:bg-slate-100"
+                  onClick={() => startTransition(() => router.push("/login"))}
+                  disabled={isPending}
+                >
                   <span
                     className="font-semibold"
                   >再ログイン</span>
                   <span
                     className="px-1 text-sm text-slate-400"
-                  >LINEのプロフィールを変更した場合など</span>
-                </Link>
-                <Link className="flex flex-col p-1 rounded hover:bg-slate-100" href="/friend">
+                  >LINEのプロフィールを変更した場合</span>
+                </button>
+                <button
+                  className="flex flex-col p-1 rounded hover:bg-slate-100"
+                  onClick={() => startTransition(() => router.push("/friend"))}
+                  disabled={isPending}
+                >
                   <span
                     className="font-semibold"
                   >友だち追加</span>
                   <span
                     className="px-1 text-sm text-slate-400"
                   >Botを別のグループトークで利用</span>
-                </Link>
+                </button>
               </div>
             </PopoverContent>
           </Popover>

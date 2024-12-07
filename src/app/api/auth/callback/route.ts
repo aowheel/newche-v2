@@ -58,5 +58,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(new URL("/auth?status=error", req.url));
+  return NextResponse.redirect(new URL("/login?status=error", req.url));
 }
