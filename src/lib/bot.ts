@@ -127,7 +127,8 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
     clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n`;
   });
 
-  const text = clipboardText + "\n記入をお願いします🙇";
+  let text = "新しい日程が作成されました✨\n\n";
+  text += clipboardText + "\n記入をお願いします🙇";
 
   const client = await BotClient();
 
@@ -137,10 +138,9 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
       to: id,
       messages: [{
         type: "template",
-        altText: "新しい日程が追加されました✨",
+        altText: "新しい日程が作成されました✨",
         template: {
           type: "buttons",
-          title: "New ✨",
           text,
           actions: [
             {
@@ -161,7 +161,7 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
 }
 
 export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
-  let text = "";
+  let text = "日程が更新されました🛠️\n\n";
   schedule.forEach(({ date, start, end, description }) => {
     const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja });
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
@@ -181,7 +181,6 @@ export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
         altText: "日程が更新されました🛠️",
         template: {
           type: "buttons",
-          title: "Update 🛠️",
           text,
           actions: [{
             type: "uri",
