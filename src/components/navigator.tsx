@@ -64,7 +64,7 @@ export default function Navigator() {
             <PopoverContent>
               <div className="flex flex-col gap-y-1 text-slate-600">
                 <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100"
+                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
                   onClick={() => startTransition(() => router.push("/manage"))}
                   disabled={isPending}
                 >
@@ -76,7 +76,7 @@ export default function Navigator() {
                   >新しい日程の作成と既存の日程の編集</span>
                 </button>
                 <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100"
+                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
                   onClick={() => startTransition(() => router.push("/login"))}
                   disabled={isPending}
                 >
@@ -88,7 +88,7 @@ export default function Navigator() {
                   >LINEのプロフィールを変更した場合</span>
                 </button>
                 <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100"
+                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
                   onClick={() => startTransition(() => router.push("/friend"))}
                   disabled={isPending}
                 >

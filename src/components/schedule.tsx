@@ -43,6 +43,7 @@ import Loading from "@/app/loading";
 import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 import { notifyCreatedSchedule, notifyUpdatedSchedule } from "@/lib/bot";
+import { useSearchParams } from "next/navigation";
 
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
@@ -51,7 +52,10 @@ export default function ViewSchedule({ row }: {
 
   const booked = row.map(({ date }) => toZonedTime(date, "Asia/Tokyo"));
 
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const params = useSearchParams();
+  const _initialDate = params.get("date");
+  const initialDate = _initialDate ? toZonedTime(_initialDate, "Asia/Tokyo") : undefined;
+  const [date, setDate] = useState<Date | undefined>(initialDate);
 
   const [isPending, startTransition] = useTransition();
 

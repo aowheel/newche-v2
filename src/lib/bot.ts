@@ -198,9 +198,8 @@ export async function notifyAt20() {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-  let _tomorrowStart = formatInTimeZone(tomorrow, "Asia/Tokyo", "yyyy-MM-dd");
-  _tomorrowStart += "T00:00+09:00";
-  const tomorrowStart = new Date(_tomorrowStart);
+  const value = formatInTimeZone(tomorrow, "Asia/Tokyo", "yyyy-MM-dd");
+  const tomorrowStart = new Date(value + "T00:00+09:00");
 
   const schedule = await scheduleOnDate(tomorrowStart);
   if (schedule.length === 0) {
@@ -215,7 +214,7 @@ export async function notifyAt20() {
     text += `${_start ? `${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n\n`;
 
     const count = await countPresentOrLate(id);
-    text += `現時点での参加予定人数は ${count}人 です。\n\n`;
+    text += `現時点での参加予定人数は ${count}人 です。`;
 
     const undecideds = await undecided(id);
 
@@ -229,7 +228,7 @@ export async function notifyAt20() {
 
       const substitution = {} as { [key: string]: any };
       if (mentions.length > 0) {
-        text += "未定の方: ";
+        text += "\n\n未定の方: ";
         mentions.forEach(({ userId }, idx) => {
           text += `{user${idx}} `;
           substitution[`user${idx}`] = {
@@ -245,7 +244,7 @@ export async function notifyAt20() {
       // ここから
       const substitution = {} as { [key: string]: any };
       if (undecideds.length > 0) {
-        text += "未定の方: ";
+        text += "\n\n未定の方: ";
         undecideds.forEach(({ userId }, idx) => {
           text += `{user${idx}} `;
           substitution[`user${idx}`] = {
@@ -282,7 +281,7 @@ export async function notifyAt20() {
                 {
                   type: "uri",
                   label: "一覧はこちら",
-                  uri: "https://newche-v2.vercel.app/view"
+                  uri: `https://newche-v2.vercel.app/view?date=${value}`
                 }
               ]
             }
@@ -298,7 +297,7 @@ export async function notifyAt20() {
 
       text += `${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n\n`;
     });
-    text += "変更がある場合やそれぞれの参加者の確認はこちらから👇";
+    text += "変更がある場合やそれぞれの参加状況の確認はこちらから👇";
 
     const client = await BotClient();
 
@@ -321,7 +320,7 @@ export async function notifyAt20() {
               {
                 type: "uri",
                 label: "一覧",
-                uri: "https://newche-v2.vercel.app/view"
+                uri: `https://newche-v2.vercel.app/view?date=${value}`
               }
             ]
           }
