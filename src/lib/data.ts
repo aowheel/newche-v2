@@ -271,10 +271,14 @@ export async function group() {
   return await prisma.group.findMany();
 }
 
-export async function upsertGroup(id: string) {
-  await prisma.group.upsert({
-    where: { id },
-    update: {},
-    create: { id }
+export async function createGroup(id: string) {
+  await prisma.group.create({
+    data: { id }
+  });
+}
+
+export async function deleteGroup(id: string) {
+  await prisma.group.delete({
+    where: { id }
   });
 }

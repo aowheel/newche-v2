@@ -1,6 +1,7 @@
 "use client";
 
 import { ListMinus, ListX, Plus, Undo2 } from "lucide-react";
+import Image from "next/image";
 
 export function ViewGuide() {
   return (
@@ -9,14 +10,14 @@ export function ViewGuide() {
     >
       <h3>使い方ガイド</h3>
       <ul>
-        <li>デフォルトで表示されるのは今日以降の日程で「出席」または「遅刻」と答えた人の一覧です。</li>
+        <li>表示されているのは今日以降の日程で「出席」または「遅刻」と答えた人の一覧です。</li>
         <li>
-          カレンダーの中で
-          <span className="inline-block w-4 h-4 mx-1 rounded-full bg-orange-500"></span>
-          がついているのは日程が存在する日付です。
+          カレンダーの中の
+          <span className="inline-block align-text-bottom w-5 h-5 mx-1 rounded bg-orange-500"></span>
+          は日程が存在する日付です。
         </li>
-        <li>その日付をタップすることで日程の詳細を見ることができます。</li>
-        <li>デフォルトの表示に戻す場合は選択した日付をもう一度タップするか、<Undo2 className="w-4 mx-1 inline" />を押してください。</li>
+        <li>日付をタップすることで日程の詳細を見ることができます。</li>
+        <li>もとの表示に戻す場合は<Undo2 className="w-4 mx-1 inline" />を押してください。</li>
       </ul>
     </div>
   );
@@ -67,14 +68,37 @@ export function ManageGuide() {
   );
 }
 
-export function FriendGuide() {
+export function FriendGuide(
+  { details }:
+  { details: { groupName: string, pictureUrl?: string }[] }
+) {
   return (
     <div
       className="prose m-4 p-4 bg-slate-100 rounded-xl"
     >
       <h2>別のグループでのNewcheの利用</h2>
       <p>Newcheを友だち追加して別のグループトークに招待することで、データを共有しつつNewcheの機能を利用することができます。</p>
-      <strong>無関係なグループトークには招待しないでください。</strong>
+      <strong>無関係なグループトークには招待しないでください。不要になった場合はグループからBotを削除してください。</strong>
+      <h3>追加済みグループ一覧</h3>
+      <div className="flex flex-col gap-y-2 px-4">
+        {details.map(({ groupName, pictureUrl }, idx) => (
+          <div
+            key={idx}
+            className="flex items-center gap-x-2"
+          >
+            <Image
+              src={pictureUrl || ""}
+              alt={groupName}
+              width="40"
+              height="40"
+              className="m-0 rounded-full"
+            />
+            <span
+              className="font-medium text-lg"
+            >{groupName}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

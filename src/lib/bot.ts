@@ -342,3 +342,21 @@ export async function groupMemberIds(groupId: string) {
     return memberIds;
   }
 }
+
+export async function groupDetail() {
+  const ids = await group();
+  const details = await Promise.all(ids.map(async ({ id }) => {
+    const res = await fetch(`https://api.line.me/v2/bot/group/${id}/summary`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${await token()}`
+      }
+    });
+
+    if (res.ok) {
+      const { groupName, pictureUrl } = await res.json();
+      return { groupName, pictureUrl };
+    }
+  }));
+  return details.filter(detail => detail !== undefined);
+}

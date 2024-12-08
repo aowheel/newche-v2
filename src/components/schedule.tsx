@@ -48,7 +48,9 @@ import { useSearchParams } from "next/navigation";
 export default function ViewSchedule({ row }: {
   row: (ScheduleWithId & { attendance: Attendance[] })[]
 }) {
-  const today = toZonedTime(new Date(), "Asia/Tokyo");
+  let today = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
+  today += "T00:00+09:00";
+  const start = new Date(today);
 
   const booked = row.map(({ date }) => toZonedTime(date, "Asia/Tokyo"));
 
@@ -91,9 +93,9 @@ export default function ViewSchedule({ row }: {
         mode="single"
         selected={date}
         onSelect={setDate}
-        today={today}
         modifiers={{ booked }}
-        modifiersClassNames={{ booked: "booked" }}
+        modifiersClassNames={{ booked: "bg-orange-500 text-white" }}
+        disabled={date => date < start}
         className="rounded-md border"
       />
       {date ?

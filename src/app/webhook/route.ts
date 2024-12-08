@@ -1,5 +1,5 @@
 import { follow, join, memberJoined } from "@/lib/bot";
-import { upsertGroup } from "@/lib/data";
+import { createGroup, deleteGroup } from "@/lib/data";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -23,9 +23,11 @@ export async function POST(req: Request) {
       await follow(event.replyToken);
     } else if (event.type === "join") {
       if (event.source.type === "group") {
-        await upsertGroup(event.source.groupId);
+        await createGroup(event.source.groupId);
         await join(event.replyToken);
       }
+    } else if (event.type = "leave") {
+      await deleteGroup(event.source.groupId);
     } else if (event.type === "memberJoined") {
       if (event.source.type === "group") {
         await memberJoined(event.replyToken, event.joined.members);
