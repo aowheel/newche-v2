@@ -7,7 +7,7 @@ import Loading from "./loading";
 
 export const metadata: Metadata = {
   title: "Newche",
-  description: "App for Institute of Science Tokyo scycle-ball team",
+  description: "東京科学大学サイクリング部ボール班のスケジュール管理アプリ",
 };
 
 export default async function RootLayout({

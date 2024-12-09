@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         await createGroup(event.source.groupId);
         await join(event.replyToken);
       }
-    } else if (event.type = "leave") {
+    } else if (event.type === "leave") {
       await deleteGroup(event.source.groupId);
     } else if (event.type === "memberJoined") {
       if (event.source.type === "group") {

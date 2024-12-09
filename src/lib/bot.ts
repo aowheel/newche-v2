@@ -67,7 +67,7 @@ export async function join(replyToken: string) {
         actions: [{
           type: "uri",
           label: "はじめる",
-          uri: "https://newche-v2.vercel.app/login"
+          uri: "https://newche-v2.vercel.app"
         }]
       }
     }]
@@ -130,10 +130,9 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
   let text = "新しい日程が作成されました✨\n\n";
   text += clipboardText + "\n記入をお願いします🙇";
 
-  const client = await BotClient();
-
   const ids = await group();
   ids.forEach(async ({ id }) => {
+    const client = await BotClient();
     await client.pushMessage({
       to: id,
       messages: [{
@@ -170,10 +169,9 @@ export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
   });
   text += "\n確認をお願いします🙇";
 
-  const client = await BotClient();
-
   const ids = await group();
   ids.forEach(async ({ id }) => {
+    const client = await BotClient();
     await client.pushMessage({
       to: id,
       messages: [{
@@ -217,8 +215,6 @@ export async function notifyAt20() {
 
     const undecideds = await undecided(id);
 
-    const client = await BotClient();
-
     const ids = await group();
     ids.forEach(async ({ id: groupId }) => {
       /* アカウント認証後こちらに移行
@@ -257,6 +253,7 @@ export async function notifyAt20() {
       };
       // ここまで
 
+      const client = await BotClient();
       await client.pushMessage({
         to: groupId,
         messages: [
@@ -298,10 +295,9 @@ export async function notifyAt20() {
     });
     text += "変更がある場合やそれぞれの参加状況の確認はこちらから👇";
 
-    const client = await BotClient();
-
     const ids = await group();
     ids.forEach(async ({ id }) => {
+      const client = await BotClient();
       await client.pushMessage({
         to: id,
         messages: [{
