@@ -27,7 +27,7 @@ export default async function Home() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              東京科学大学サイクリング部ボール班のためのWEBアプリです。
+              東京科学大学サイクリング部ボール班のスケジュール管理アプリです。
             </AlertDialogTitle>
             <AlertDialogDescription>
               対象は部の関係者です。
@@ -42,7 +42,7 @@ export default async function Home() {
             </AlertDialogCancel>
             <AlertDialogAction>
               <Link 
-                href="/auth"
+                href="/login"
                 className="grow"
               >続ける</Link>
             </AlertDialogAction>
