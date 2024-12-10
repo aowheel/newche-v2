@@ -194,15 +194,14 @@ export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
 }
 
 export async function notifyAt20() {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
   const value = formatInTimeZone(tomorrow, "Asia/Tokyo", "yyyy-MM-dd");
   const tomorrowStart = new Date(value + "T00:00+09:00");
 
   const schedule = await scheduleOnDate(tomorrowStart);
   if (schedule.length === 0) {
-    return;
+    return console.log("No schedule on", tomorrowStart);
   } else if (schedule.length === 1) {
     const { id, start, end, description } = schedule[0];
 
@@ -219,49 +218,49 @@ export async function notifyAt20() {
     const lates = await late(id);
     const undecideds = await undecided(id);
 
+    const substitution = {} as { [key: string]: any };
+    if (presents.length > 0) {
+      text += "\n\n出席: ";
+      presents.forEach(({ userId }, idx) => {
+        text += `{user${idx}} `;
+        substitution[`user${idx}`] = {
+          type: "mention",
+          mentionee: {
+            type: "user",
+            userId
+          }
+        };
+      });
+    }
+    if (lates.length > 0) {
+      text += "\n\n遅刻: ";
+      lates.forEach(({ userId }, idx) => {
+        text += `{user${idx}} `;
+        substitution[`user${idx}`] = {
+          type: "mention",
+          mentionee: {
+            type: "user",
+            userId
+          }
+        };
+      });
+    }
+    if (undecideds.length > 0) {
+      text += "\n\n未定: ";
+      undecideds.forEach(({ userId }, idx) => {
+        text += `{user${idx}} `;
+        substitution[`user${idx}`] = {
+          type: "mention",
+          mentionee: {
+            type: "user",
+            userId
+          }
+        };
+      });
+    };
+
     const ids = await group();
     ids.forEach(async ({ id: groupId }) => {
-      const substitution = {} as { [key: string]: any };
-      if (presents.length > 0) {
-        text += "\n\n出席: ";
-        presents.forEach(({ userId }, idx) => {
-          text += `{user${idx}} `;
-          substitution[`user${idx}`] = {
-            type: "mention",
-            mentionee: {
-              type: "user",
-              userId
-            }
-          };
-        });
-      }
-      if (lates.length > 0) {
-        text += "\n\n遅刻: ";
-        lates.forEach(({ userId }, idx) => {
-          text += `{user${idx}} `;
-          substitution[`user${idx}`] = {
-            type: "mention",
-            mentionee: {
-              type: "user",
-              userId
-            }
-          };
-        });
-      }
-      if (undecideds.length > 0) {
-        text += "\n\n未定: ";
-        undecideds.forEach(({ userId }, idx) => {
-          text += `{user${idx}} `;
-          substitution[`user${idx}`] = {
-            type: "mention",
-            mentionee: {
-              type: "user",
-              userId
-            }
-          };
-        });
-      };
-
       const client = await BotClient();
       await client.pushMessage({
         to: groupId,

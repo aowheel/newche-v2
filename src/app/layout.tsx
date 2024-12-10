@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { notoSansJP } from "@/lib/fonts";
-import { ReactNode, Suspense } from "react";
+import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
-import Loading from "./loading";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Newche",
@@ -20,10 +19,8 @@ export default async function RootLayout({
       <body
         className={`${notoSansJP.className} flex flex-col items-center justify-center min-h-screen`}
       >
-        <Suspense fallback={<Loading />}>
-          {children}
-          <Toaster />
-        </Suspense>
+        {children}
+        <Toaster />
       </body>
     </html>
   );
