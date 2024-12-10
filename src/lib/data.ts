@@ -209,6 +209,30 @@ export async function countPresentOrLate(scheduleId: number) {
   });
 }
 
+export async function present(scheduleId: number) {
+  return await prisma.attendance.findMany({
+    where: {
+      scheduleId,
+      status: "PRESENT"
+    },
+    select: {
+      userId: true
+    }
+  })
+}
+
+export async function late(scheduleId: number) {
+  return await prisma.attendance.findMany({
+    where: {
+      scheduleId,
+      status: "LATE"
+    },
+    select: {
+      userId: true
+    }
+  });
+}
+
 export async function undecided(scheduleId: number) {
   return await prisma.attendance.findMany({
     where: {

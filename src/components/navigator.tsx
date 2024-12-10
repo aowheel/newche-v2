@@ -10,17 +10,21 @@ import { unsubmitted } from "@/lib/data";
 
 export default function Navigator() {
   const router = useRouter();
+
   const path = usePathname();
+  const isAttendancePath = path.startsWith("/attendance");
+
   const [isPending, startTransition] = useTransition();
 
   const [count, setCount] = useState(0);
+
   useEffect(() => {
     const fetchUnsubmitted = async () => {
       setCount(await unsubmitted());
     };
-  
+
     fetchUnsubmitted();
-  }, [path.startsWith("/attendance")]);
+  }, [isAttendancePath]);
 
   return (
     <nav className="w-fit">

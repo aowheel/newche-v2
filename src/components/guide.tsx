@@ -68,9 +68,12 @@ export function ManageGuide() {
   );
 }
 
-export function FriendGuide(
-  { details }:
-  { details: { groupName: string, pictureUrl?: string }[] }
+export function FriendGuide({
+  details, status
+}: {
+  details: { groupName: string, pictureUrl?: string }[];
+  status: string;
+}
 ) {
   return (
     <div
@@ -80,7 +83,7 @@ export function FriendGuide(
       <p>Newcheを友だち追加して別のグループトークに招待することで、データを共有しつつNewcheの機能を利用することができます。</p>
       <strong>無関係なグループトークには招待しないでください。不要になった場合はグループからBotを削除してください。</strong>
       <h3>追加済みグループ一覧</h3>
-      <div className="flex flex-col gap-y-2 px-4">
+      <div className="flex flex-col gap-y-2">
         {details.map(({ groupName, pictureUrl }, idx) => (
           <div
             key={idx}
@@ -99,6 +102,8 @@ export function FriendGuide(
           </div>
         ))}
       </div>
+      <h3>今月の配信数</h3>
+      <p>新規・編集、毎日20時の通知 / 上限 : <strong className="inline-block">{status}</strong></p>
     </div>
   );
 }

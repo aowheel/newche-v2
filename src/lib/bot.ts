@@ -4,6 +4,8 @@ import { messagingApi } from "@line/bot-sdk";
 import {
   countPresentOrLate,
   group,
+  late,
+  present,
   Schedule,
   scheduleOnDate,
   ScheduleWithId,
@@ -213,18 +215,16 @@ export async function notifyAt20() {
     const count = await countPresentOrLate(id);
     text += `現時点での参加予定人数は ${count}人 です。`;
 
+    const presents = await present(id);
+    const lates = await late(id);
     const undecideds = await undecided(id);
 
     const ids = await group();
     ids.forEach(async ({ id: groupId }) => {
-      /* アカウント認証後こちらに移行
-      const memberIds = await groupMemberIds(id);
-      const mentions = undecideds.filter(({ userId }) => memberIds.includes(userId));
-
       const substitution = {} as { [key: string]: any };
-      if (mentions.length > 0) {
-        text += "\n\n未定の方: ";
-        mentions.forEach(({ userId }, idx) => {
+      if (presents.length > 0) {
+        text += "\n\n出席: ";
+        presents.forEach(({ userId }, idx) => {
           text += `{user${idx}} `;
           substitution[`user${idx}`] = {
             type: "mention",
@@ -234,12 +234,22 @@ export async function notifyAt20() {
             }
           };
         });
-      };
-      */
-      // ここから
-      const substitution = {} as { [key: string]: any };
+      }
+      if (lates.length > 0) {
+        text += "\n\n遅刻: ";
+        lates.forEach(({ userId }, idx) => {
+          text += `{user${idx}} `;
+          substitution[`user${idx}`] = {
+            type: "mention",
+            mentionee: {
+              type: "user",
+              userId
+            }
+          };
+        });
+      }
       if (undecideds.length > 0) {
-        text += "\n\n未定の方: ";
+        text += "\n\n未定: ";
         undecideds.forEach(({ userId }, idx) => {
           text += `{user${idx}} `;
           substitution[`user${idx}`] = {
@@ -251,7 +261,6 @@ export async function notifyAt20() {
           };
         });
       };
-      // ここまで
 
       const client = await BotClient();
       await client.pushMessage({
@@ -264,10 +273,10 @@ export async function notifyAt20() {
           },
           {
             type: "template",
-            altText: "変更がある場合はこちらから👇",
+            altText: "未定の方や変更がある場合はこちらから👇",
             template: {
               type: "buttons",
-              text: "変更がある場合はこちらから👇",
+              text: "未定の方や変更がある場合はこちらから👇",
               actions: [
                 {
                   type: "uri",
@@ -325,34 +334,18 @@ export async function notifyAt20() {
   }
 }
 
-export async function groupMemberIds(groupId: string) {
-  const res = await fetch(`https://api.line.me/v2/bot/group/${groupId}/members/ids`, {
-    method: "GET",
-    headers: {
-      "Authorization": `Bearer ${await token()}` 
-    }
-  });
-
-  if (res.ok) {
-    const { memberIds } = await res.json();
-    return memberIds;
-  }
-}
-
 export async function groupDetail() {
   const ids = await group();
-  const details = await Promise.all(ids.map(async ({ id }) => {
-    const res = await fetch(`https://api.line.me/v2/bot/group/${id}/summary`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${await token()}`
-      }
-    });
-
-    if (res.ok) {
-      const { groupName, pictureUrl } = await res.json();
-      return { groupName, pictureUrl };
-    }
+  return await Promise.all(ids.map(async ({ id }) => {
+    const client = await BotClient();
+    const { groupName, pictureUrl } = await client.getGroupSummary(id);
+    return { groupName, pictureUrl };
   }));
-  return details.filter(detail => detail !== undefined);
+}
+
+export async function botStatus() {
+  const client = await BotClient();
+  const quota = await client.getMessageQuota();
+  const consumption = await client.getMessageQuotaConsumption();
+  return { quota, consumption };
 }
