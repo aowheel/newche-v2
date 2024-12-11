@@ -299,7 +299,7 @@ export async function notifyAt20() {
         });
       })
     );
-  } else {
+  } else if (schedule.length > 1) {
     let text = "明日の日程はこちらです📅\n\n";
     schedule.forEach(({ start, end, description }) => {
       const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
