@@ -260,6 +260,7 @@ export async function notifyAt20() {
     };
 
     const ids = await group();
+    console.log(ids);
     ids.forEach(async ({ id: groupId }) => {
       const client = await BotClient();
       const res = await client.pushMessageWithHttpInfo({
