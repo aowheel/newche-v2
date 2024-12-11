@@ -259,13 +259,10 @@ export async function notifyAt20() {
       });
     };
 
-    // 検証用
-    console.log(text);
-
     const ids = await group();
     ids.forEach(async ({ id: groupId }) => {
       const client = await BotClient();
-      await client.pushMessage({
+      const res = await client.pushMessageWithHttpInfo({
         to: groupId,
         messages: [
           {
@@ -295,9 +292,8 @@ export async function notifyAt20() {
           }
         ]
       });
+      console.log(res.httpResponse.status);
     });
-
-    return console.log("One schedule on ", tomorrowStart);
   } else {
     let text = "明日の日程はこちらです📅\n\n";
     schedule.forEach(({ start, end, description }) => {
@@ -335,8 +331,6 @@ export async function notifyAt20() {
         }]
       });
     });
-
-    return console.log("Multiple schedules on ", tomorrowStart);
   }
 }
 
