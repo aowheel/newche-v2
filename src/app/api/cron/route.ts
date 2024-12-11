@@ -8,8 +8,6 @@ export async function GET(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  console.log("Cron job started");
-
   await notifyAt20();
 
   return new Response(null, { status: 200 });
