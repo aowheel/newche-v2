@@ -133,32 +133,34 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
   text += clipboardText + "\n記入をお願いします🙇";
 
   const ids = await group();
-  ids.forEach(async ({ id }) => {
-    const client = await BotClient();
-    await client.pushMessage({
-      to: id,
-      messages: [{
-        type: "template",
-        altText: "新しい日程が作成されました✨",
-        template: {
-          type: "buttons",
-          text,
-          actions: [
-            {
-              type: "uri",
-              label: "記入する",
-              uri: "https://newche-v2.vercel.app/attendance"
-            },
-            {
-              type: "clipboard",
-              label: "日程をコピー",
-              clipboardText
-            }
-          ]
-        }
-      }]
-    });
-  });
+  const client = await BotClient();
+  await Promise.all(
+    ids.map(async ({ id }) => {
+      await client.pushMessage({
+        to: id,
+        messages: [{
+          type: "template",
+          altText: "新しい日程が作成されました✨",
+          template: {
+            type: "buttons",
+            text,
+            actions: [
+              {
+                type: "uri",
+                label: "記入する",
+                uri: "https://newche-v2.vercel.app/attendance"
+              },
+              {
+                type: "clipboard",
+                label: "日程をコピー",
+                clipboardText
+              }
+            ]
+          }
+        }]
+      });
+    })
+  );
 }
 
 export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
@@ -172,25 +174,27 @@ export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
   text += "\n確認をお願いします🙇";
 
   const ids = await group();
-  ids.forEach(async ({ id }) => {
-    const client = await BotClient();
-    await client.pushMessage({
-      to: id,
-      messages: [{
-        type: "template",
-        altText: "日程が更新されました🛠️",
-        template: {
-          type: "buttons",
-          text,
-          actions: [{
-            type: "uri",
-            label: "記入する",
-            uri: "https://newche-v2.vercel.app/attendance"
-          }]
-        }
-      }]
-    });
-  });
+  const client = await BotClient();
+  await Promise.all(
+    ids.map(async ({ id }) => {
+      await client.pushMessage({
+        to: id,
+        messages: [{
+          type: "template",
+          altText: "日程が更新されました🛠️",
+          template: {
+            type: "buttons",
+            text,
+            actions: [{
+              type: "uri",
+              label: "記入する",
+              uri: "https://newche-v2.vercel.app/attendance"
+            }]
+          }
+        }]
+      });
+    })
+  );
 }
 
 export async function notifyAt20() {
@@ -200,9 +204,7 @@ export async function notifyAt20() {
   const tomorrowStart = new Date(value + "T00:00+09:00");
 
   const schedule = await scheduleOnDate(tomorrowStart);
-  if (schedule.length === 0) {
-    return console.log("No schedule on ", tomorrowStart);
-  } else if (schedule.length === 1) {
+  if (schedule.length === 1) {
     const { id, start, end, description } = schedule[0];
 
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
@@ -211,12 +213,14 @@ export async function notifyAt20() {
     let text = "明日の日程はこちらです📅\n\n";
     text += `${_start ? `${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n\n`;
 
-    const count = await countPresentOrLate(id);
-    text += `現時点での参加予定人数は ${count}人 です。`;
+    const [count, presents, lates, undecideds] = await Promise.all([
+      countPresentOrLate(id),
+      present(id),
+      late(id),
+      undecided(id)
+    ]);
 
-    const presents = await present(id);
-    const lates = await late(id);
-    const undecideds = await undecided(id);
+    text += `現時点での参加予定人数は ${count}人 です。`;
 
     const substitution = {} as { [key: string]: any };
     if (presents.length > 0) {
@@ -260,41 +264,41 @@ export async function notifyAt20() {
     };
 
     const ids = await group();
-    console.log(ids);
-    ids.forEach(async ({ id: groupId }) => {
-      const client = await BotClient();
-      const res = await client.pushMessageWithHttpInfo({
-        to: groupId,
-        messages: [
-          {
-            type: "textV2",
-            text,
-            substitution
-          },
-          {
-            type: "template",
-            altText: "未定の方や変更がある場合はこちらから👇",
-            template: {
-              type: "buttons",
-              text: "未定の方や変更がある場合はこちらから👇",
-              actions: [
-                {
-                  type: "uri",
-                  label: "変更",
-                  uri: "https://newche-v2.vercel.app/attendance"
-                },
-                {
-                  type: "uri",
-                  label: "一覧はこちら",
-                  uri: `https://newche-v2.vercel.app/view?date=${value}`
-                }
-              ]
+    const client = await BotClient();
+    await Promise.all(
+      ids.map(async ({ id: groupId }) => {
+        await client.pushMessage({
+          to: groupId,
+          messages: [
+            {
+              type: "textV2",
+              text,
+              substitution
+            },
+            {
+              type: "template",
+              altText: "未定の方や変更がある場合はこちらから👇",
+              template: {
+                type: "buttons",
+                text: "未定の方や変更がある場合はこちらから👇",
+                actions: [
+                  {
+                    type: "uri",
+                    label: "変更",
+                    uri: "https://newche-v2.vercel.app/attendance"
+                  },
+                  {
+                    type: "uri",
+                    label: "一覧はこちら",
+                    uri: `https://newche-v2.vercel.app/view?date=${value}`
+                  }
+                ]
+              }
             }
-          }
-        ]
-      });
-      console.log(res.httpResponse.status);
-    });
+          ]
+        });
+      })
+    );
   } else {
     let text = "明日の日程はこちらです📅\n\n";
     schedule.forEach(({ start, end, description }) => {
@@ -306,32 +310,34 @@ export async function notifyAt20() {
     text += "変更がある場合やそれぞれの参加状況の確認はこちらから👇";
 
     const ids = await group();
-    ids.forEach(async ({ id }) => {
-      const client = await BotClient();
-      await client.pushMessage({
-        to: id,
-        messages: [{
-          type: "template",
-          altText: "明日の日程はこちらです📅",
-          template: {
-            type: "buttons",
-            text,
-            actions: [
-              {
-                type: "uri",
-                label: "変更",
-                uri: "https://newche-v2.vercel.app/attendance"
-              },
-              {
-                type: "uri",
-                label: "一覧",
-                uri: `https://newche-v2.vercel.app/view?date=${value}`
-              }
-            ]
-          }
-        }]
-      });
-    });
+    const client = await BotClient();
+    await Promise.all(
+      ids.map(async ({ id }) => {
+        await client.pushMessage({
+          to: id,
+          messages: [{
+            type: "template",
+            altText: "明日の日程はこちらです📅",
+            template: {
+              type: "buttons",
+              text,
+              actions: [
+                {
+                  type: "uri",
+                  label: "変更",
+                  uri: "https://newche-v2.vercel.app/attendance"
+                },
+                {
+                  type: "uri",
+                  label: "一覧",
+                  uri: `https://newche-v2.vercel.app/view?date=${value}`
+                }
+              ]
+            }
+          }]
+        });
+      })
+    );
   }
 }
 
