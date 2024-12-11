@@ -112,7 +112,7 @@ export async function memberJoined(
           actions: [{
             type: "uri",
             label: "はじめる",
-            uri: "https://newche-v2.vercel.app/login"
+            uri: "https://newche-v2.vercel.app"
           }]
         }
       }
@@ -147,7 +147,7 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
             actions: [
               {
                 type: "uri",
-                label: "記入する",
+                label: "出欠席の選択",
                 uri: "https://newche-v2.vercel.app/attendance"
               },
               {
@@ -187,7 +187,7 @@ export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
             text,
             actions: [{
               type: "uri",
-              label: "記入する",
+              label: "出欠席の選択",
               uri: "https://newche-v2.vercel.app/attendance"
             }]
           }
@@ -210,9 +210,6 @@ export async function notifyAt20() {
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
     const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
 
-    let text = "明日の日程はこちらです📅\n\n";
-    text += `${_start ? `${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n\n`;
-
     const [count, presents, lates, undecideds] = await Promise.all([
       countPresentOrLate(id),
       present(id),
@@ -220,53 +217,90 @@ export async function notifyAt20() {
       undecided(id)
     ]);
 
-    text += `現時点での参加予定人数は ${count}人 です。`;
-
-    const substitution = {} as { [key: string]: any };
-    if (presents.length > 0) {
-      text += "\n\n出席: ";
-      presents.forEach(({ userId }, idx) => {
-        text += `{user${idx}} `;
-        substitution[`user${idx}`] = {
-          type: "mention",
-          mentionee: {
-            type: "user",
-            userId
-          }
-        };
-      });
-    }
-    if (lates.length > 0) {
-      text += "\n\n遅刻: ";
-      lates.forEach(({ userId }, idx) => {
-        text += `{user${idx}} `;
-        substitution[`user${idx}`] = {
-          type: "mention",
-          mentionee: {
-            type: "user",
-            userId
-          }
-        };
-      });
-    }
-    if (undecideds.length > 0) {
-      text += "\n\n未定: ";
-      undecideds.forEach(({ userId }, idx) => {
-        text += `{user${idx}} `;
-        substitution[`user${idx}`] = {
-          type: "mention",
-          mentionee: {
-            type: "user",
-            userId
-          }
-        };
-      });
-    };
-
     const ids = await group();
     const client = await BotClient();
     await Promise.all(
       ids.map(async ({ id: groupId }) => {
+        const validPresents = (
+          await Promise.all(
+            presents.map(async ({ userId }) => {
+              const { httpResponse } = await client.getGroupMemberProfileWithHttpInfo(groupId, userId);
+              if (httpResponse.status === 200) {
+                return userId;
+              }
+              return null;
+            })
+          )
+        ).filter(userId => userId !== null);
+        const validLates = (
+          await Promise.all(
+            lates.map(async ({ userId }) => {
+              const { httpResponse } = await client.getGroupMemberProfileWithHttpInfo(groupId, userId);
+              if (httpResponse.status === 200) {
+                return userId;
+              }
+              return null;
+            })
+          )
+        ).filter(userId => userId !== null);
+        const validUndecideds = (
+          await Promise.all(
+            undecideds.map(async ({ userId }) => {
+              const { httpResponse } = await client.getGroupMemberProfileWithHttpInfo(groupId, userId);
+              if (httpResponse.status === 200) {
+                return userId;
+              }
+              return null;
+            })
+          )
+        ).filter(userId => userId !== null);
+
+        let text = "明日の日程はこちらです📅\n\n";
+        text += `${_start ? `${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n\n`;
+        text += `現時点での参加予定人数は ${count}人 です。`;
+
+        const substitution: { [key: string]: any } = {};
+
+        if (validPresents.length > 0) {
+          text += "\n\n出席: ";
+          validPresents.forEach((userId, idx) => {
+            text += `{present${idx}} `;
+            substitution[`present${idx}`] = {
+              type: "mention",
+              mentionee: {
+                type: "user",
+                userId
+              }
+            };
+          });
+        }
+        if (validLates.length > 0) {
+          text += "\n\n遅刻: ";
+          validLates.forEach((userId, idx) => {
+            text += `{late${idx}} `;
+            substitution[`late${idx}`] = {
+              type: "mention",
+              mentionee: {
+                type: "user",
+                userId
+              }
+            };
+          });
+        }
+        if (validUndecideds.length > 0) {
+          text += "\n\n未定: ";
+          validUndecideds.forEach((userId, idx) => {
+            text += `{undecoded${idx}} `;
+            substitution[`undecided${idx}`] = {
+              type: "mention",
+              mentionee: {
+                type: "user",
+                userId
+              }
+            };
+          });
+        }
+
         await client.pushMessage({
           to: groupId,
           messages: [
@@ -284,12 +318,12 @@ export async function notifyAt20() {
                 actions: [
                   {
                     type: "uri",
-                    label: "変更",
+                    label: "出欠席の選択",
                     uri: "https://newche-v2.vercel.app/attendance"
                   },
                   {
                     type: "uri",
-                    label: "一覧はこちら",
+                    label: "日程の一覧",
                     uri: `https://newche-v2.vercel.app/view?date=${value}`
                   }
                 ]
@@ -307,7 +341,7 @@ export async function notifyAt20() {
 
       text += `${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n\n`;
     });
-    text += "変更がある場合やそれぞれの参加状況の確認はこちらから👇";
+    text += "変更がある場合や参加者の確認はこちらから👇";
 
     const ids = await group();
     const client = await BotClient();
@@ -324,12 +358,12 @@ export async function notifyAt20() {
               actions: [
                 {
                   type: "uri",
-                  label: "変更",
+                  label: "出欠席の選択",
                   uri: "https://newche-v2.vercel.app/attendance"
                 },
                 {
                   type: "uri",
-                  label: "一覧",
+                  label: "日程の一覧",
                   uri: `https://newche-v2.vercel.app/view?date=${value}`
                 }
               ]
@@ -343,11 +377,13 @@ export async function notifyAt20() {
 
 export async function groupDetail() {
   const ids = await group();
-  return await Promise.all(ids.map(async ({ id }) => {
-    const client = await BotClient();
+  const client = await BotClient();
+  return  Promise.all(
+    ids.map(async ({ id }) => {
     const { groupName, pictureUrl } = await client.getGroupSummary(id);
     return { groupName, pictureUrl };
-  }));
+    })
+  );
 }
 
 export async function botStatus() {
