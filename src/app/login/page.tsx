@@ -26,17 +26,24 @@ export default function Auth() {
 
   return (
     <main
-      className="flex flex-col items-center"
+      className="flex flex-col gap-y-4 items-center"
     >
-      {status === "error" && (
-        <p className="text-red-500 font-medium p-4">ログインに問題が発生しました。再度お試しください。</p>
-      )}
+      {status === "err" &&
+      <p className="text-red-500 font-medium p-4">ログインに問題が発生しました。再度お試しください。</p>}
       <Button
         onClick={() => startTransition(redirectToLineAuth)}
         disabled={isPending}
       >
         LINEでログイン
       </Button>
+      {status === "re" &&
+      <Button
+        variant="outline"
+        onClick={() => startTransition(() => router.push("/view"))}
+        disabled={isPending}
+      >
+        戻る
+      </Button>}
     </main>
   );
 }

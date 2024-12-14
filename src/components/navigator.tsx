@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -60,9 +60,9 @@ export default function Navigator() {
         <li>
           <Popover>
             <PopoverTrigger asChild>
-              <div className="flex items-end rounded-full px-4 py-2 hover:bg-slate-100 transition">
+              <div className="group flex items-end rounded-full px-4 py-2 hover:bg-slate-100 transition">
                 その他
-                <ChevronDown className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5 group-hover:rotate-90 transition" />
               </div>
             </PopoverTrigger>
             <PopoverContent>
@@ -81,7 +81,7 @@ export default function Navigator() {
                 </button>
                 <button
                   className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
-                  onClick={() => startTransition(() => router.push("/login"))}
+                  onClick={() => startTransition(() => router.push("/login?status=re"))}
                   disabled={isPending}
                 >
                   <span
@@ -102,6 +102,15 @@ export default function Navigator() {
                   <span
                     className="px-1 text-sm text-slate-400"
                   >Botを別のグループトークで利用</span>
+                </button>
+                <button
+                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
+                  onClick={() => startTransition(() => router.push("/about"))}
+                  disabled={isPending}
+                >
+                  <span
+                    className="font-semibold"
+                  >概要</span>
                 </button>
               </div>
             </PopoverContent>

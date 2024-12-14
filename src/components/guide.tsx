@@ -103,7 +103,7 @@ export function FriendGuide({
         ))}
       </div>
       <h3>今月の配信数</h3>
-      <p>新規・編集、毎日20時の通知 / 上限 : <strong className="inline-block">{status}</strong></p>
+      <p>新規・編集、前日20時の通知 / 上限 : <strong className="inline-block">{status}</strong></p>
     </div>
   );
 }

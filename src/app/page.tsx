@@ -42,7 +42,7 @@ export default async function Home() {
             </AlertDialogCancel>
             <AlertDialogAction>
               <Link 
-                href="/view"
+                href="/login"
                 className="grow"
               >続ける</Link>
             </AlertDialogAction>
