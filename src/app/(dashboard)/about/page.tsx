@@ -16,7 +16,7 @@ export default function About() {
         />
       </Link>
       <Link
-        href="https:/x.com/aowheel"
+        href="https://x.com/aowheel"
         className="transition hover:opacity-75"
       >
         <Image
