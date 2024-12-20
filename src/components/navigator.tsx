@@ -18,6 +18,8 @@ export default function Navigator() {
 
   const [count, setCount] = useState(0);
 
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const fetchUnsubmitted = async () => {
       setCount(await unsubmitted());
@@ -58,61 +60,75 @@ export default function Navigator() {
           </button>
         </li>
         <li>
-          <Popover>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <div className="group flex items-end rounded-full px-4 py-2 hover:bg-slate-100 transition">
+              <div className={clsx("group flex items-end rounded-full px-4 py-2 transition", {
+                "hover:bg-slate-100": path.startsWith("/view") || path.startsWith("/attendance"),
+                "bg-slate-900 text-white": !path.startsWith("/view") && !path.startsWith("/attendance"),
+                "bg-opacity-75": isPending
+              })}>
                 その他
                 <ChevronRight className="w-5 h-5 group-hover:rotate-90 transition" />
               </div>
             </PopoverTrigger>
             <PopoverContent>
-              <div className="flex flex-col gap-y-1 text-slate-600">
-                <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
-                  onClick={() => startTransition(() => router.push("/manage"))}
-                  disabled={isPending}
-                >
-                  <span
-                    className="font-semibold"
-                  >新規・編集</span>
-                  <span
-                    className="px-1 text-sm text-slate-400"
-                  >新しい日程の作成と既存の日程の編集</span>
-                </button>
-                <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
-                  onClick={() => startTransition(() => router.push("/login?status=re"))}
-                  disabled={isPending}
-                >
-                  <span
-                    className="font-semibold"
-                  >再ログイン</span>
-                  <span
-                    className="px-1 text-sm text-slate-400"
-                  >LINEのプロフィールを変更した場合</span>
-                </button>
-                <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
-                  onClick={() => startTransition(() => router.push("/friend"))}
-                  disabled={isPending}
-                >
-                  <span
-                    className="font-semibold"
-                  >友だち追加</span>
-                  <span
-                    className="px-1 text-sm text-slate-400"
-                  >Botを別のグループトークで利用</span>
-                </button>
-                <button
-                  className="flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
-                  onClick={() => startTransition(() => router.push("/about"))}
-                  disabled={isPending}
-                >
-                  <span
-                    className="font-semibold"
-                  >概要</span>
-                </button>
-              </div>
+              <button
+                className="w-full flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
+                onClick={() => startTransition(() => {
+                  router.push("/manage");
+                  setOpen(false);
+                })}
+                disabled={isPending}
+              >
+                <span
+                  className="font-semibold text-slate-600"
+                >新規・編集</span>
+                <span
+                  className="px-1 text-sm text-slate-400"
+                >新しい日程の作成と既存の日程の編集</span>
+              </button>
+              <button
+                className="w-full flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
+                onClick={() => startTransition(() => {
+                  router.push("/login?status=re");
+                  setOpen(false);
+                })}
+                disabled={isPending}
+              >
+                <span
+                  className="font-semibold text-slate-600"
+                >再ログイン</span>
+                <span
+                  className="px-1 text-sm text-slate-400"
+                >LINEのプロフィールを変更した場合</span>
+              </button>
+              <button
+                className="w-full flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
+                onClick={() => startTransition(() => {
+                  router.push("/friend");
+                  setOpen(false);
+                })}
+                disabled={isPending}
+              >
+                <span
+                  className="font-semibold text-slate-600"
+                >友だち追加</span>
+                <span
+                  className="px-1 text-sm text-slate-400"
+                >Botを別のグループトークで利用</span>
+              </button>
+              <button
+                className="w-full flex flex-col p-1 rounded hover:bg-slate-100 outline-none"
+                onClick={() => startTransition(() => {
+                  router.push("/about");
+                  setOpen(false);
+                })}
+                disabled={isPending}
+              >
+                <span
+                  className="font-semibold text-slate-600"
+                >概要</span>
+              </button>
             </PopoverContent>
           </Popover>
         </li>
