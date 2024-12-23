@@ -43,10 +43,11 @@ import Loading from "@/app/loading";
 import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import { ja } from "date-fns/locale";
 import { notifyCreatedSchedule, notifyUpdatedSchedule } from "@/lib/bot";
+import { Schedule as PrismaSchedule } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 
 export default function ViewSchedule({ row }: {
-  row: (ScheduleWithId & { attendance: Attendance[] })[]
+  row: (PrismaSchedule & { attendance: Attendance[] })[]
 }) {
   const today = toZonedTime(new Date(), "Asia/Tokyo");
 
@@ -152,12 +153,12 @@ export default function ViewSchedule({ row }: {
               <span>{description}</span>
             </div>}
             {present.length > 0 &&
-            <div className="flex items-center gap-x-1">
+            <div className="flex items-stretch gap-x-2">
               <div
-                className="px-1 rounded text-sm text-nowrap bg-green-500 text-white"
+                className="[writing-mode:vertical-rl] flex justify-center rounded bg-green-500 text-white"
               >出席</div>
               <div
-                className="flex flex-wrap gap-2"
+                className="flex flex-wrap gap-1"
               >
                 {present.map(({ name, picture }, idx) => (
                   <div
@@ -174,12 +175,12 @@ export default function ViewSchedule({ row }: {
               </div>
             </div>}
             {absent.length > 0 &&
-            <div className="flex items-center gap-x-1">
+            <div className="flex items-stretch gap-x-2">
               <div
-                className="px-1 rounded text-sm text-nowrap bg-red-500 text-white"
+                className="[writing-mode:vertical-rl] flex justify-center rounded bg-red-500 text-white"
               >欠席</div>
               <div
-                className="flex flex-wrap gap-2"
+                className="flex flex-wrap gap-1"
               >
                 {absent.map(({ name, picture }, idx) => (
                   <div
@@ -196,12 +197,12 @@ export default function ViewSchedule({ row }: {
               </div>
             </div>}
             {late.length > 0 &&
-            <div className="flex items-center gap-x-1">
+            <div className="flex items-stretch gap-x-2">
               <div
-                className="px-1 rounded text-sm text-nowrap bg-yellow-500 text-white"
+                className="[writing-mode:vertical-rl] flex justify-center rounded bg-yellow-500 text-white"
               >遅刻</div>
               <div
-                className="flex flex-wrap gap-2"
+                className="flex flex-wrap gap-1"
               >
                 {late.map(({ name, picture }, idx) => (
                   <div
@@ -218,12 +219,12 @@ export default function ViewSchedule({ row }: {
               </div>
             </div>}
             {undecided.length > 0 &&
-            <div className="flex items-center gap-x-1">
+            <div className="flex items-stretch gap-x-2">
               <div
-                className="px-1 rounded text-sm text-nowrap bg-gray-500 text-white"
+                className="[writing-mode:vertical-rl] flex justify-center rounded bg-gray-500 text-white"
               >未定</div>
               <div
-                className="flex flex-wrap gap-2"
+                className="flex flex-wrap gap-1"
               >
                 {undecided.map(({ name, picture }, idx) => (
                   <div

@@ -91,25 +91,44 @@ export interface Attendance {
   picture?: string;
 }
 
-export async function overallAttendance(scheduleId: number): Promise<Attendance[]> {
-  const present = await prisma.attendance.findMany({
+export async function overallAttendanceFromNow() {
+  let _gte = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
+  _gte += "T00:00+09:00";
+  const gte = new Date(_gte);
+
+  const attendance = await prisma.schedule.findMany({
     where: {
-      scheduleId,
-      status: { in: ["PRESENT", "LATE"] }
+      date: { gte }
     },
+    orderBy: { date: "asc" },
     select: {
-      user: {
+      id: true,
+      date: true,
+      start: true,
+      end: true,
+      description: true,
+      users: {
+        where: {
+          status: { in: ["PRESENT", "LATE"] }
+        },
         select: {
-          name: true,
-          picture: true
+          user: {
+            select: {
+              name: true,
+              picture: true
+            }
+          }
         }
       }
     }
   });
 
-  return present.map(({ user }) => ({
-    name: user.name,
-    picture: user.picture || undefined
+  return attendance.map(({ users, ...other }) => ({
+    ...other,
+    attendance: users.map(({ user }) => ({
+      name: user.name,
+      picture: user.picture || undefined
+    }))
   }));
 }
 

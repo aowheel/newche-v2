@@ -1,28 +1,9 @@
 import { ViewGuide } from "@/components/guide";
 import ViewSchedule from "@/components/schedule";
-import { overallAttendance, scheduleFromNow } from "@/lib/data";
+import { overallAttendanceFromNow } from "@/lib/data";
 
 export default async function View() {
-  const schedule = await scheduleFromNow();
-
-  const row = await Promise.all(schedule.map(async ({
-    id,
-    date,
-    start,
-    end,
-    description
-  }) => {
-    const attendance = await overallAttendance(id);
-
-    return {
-      id,
-      date,
-      start: start || undefined,
-      end: end || undefined,
-      description: description || undefined,
-      attendance
-    }
-  }));
+  const row = await overallAttendanceFromNow();
 
   return (
     <div
