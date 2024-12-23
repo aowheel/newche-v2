@@ -269,7 +269,7 @@ export async function upsertAttendance(
   });
 }
 
-export async function unsubmitted() {
+export async function unsubmitted(sub: string) {
   let _gte = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
   _gte += "T00:00+09:00";
   const gte = new Date(_gte);
@@ -282,6 +282,7 @@ export async function unsubmitted() {
 
   const submitted = await prisma.attendance.count({
     where: {
+      userId: sub,
       schedule: {
         date: { gte }
       }

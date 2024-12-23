@@ -8,7 +8,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { unsubmitted } from "@/lib/data";
 
-export default function Navigator() {
+export default function Navigator({ sub }: { sub: string }) {
   const router = useRouter();
 
   const path = usePathname();
@@ -22,11 +22,11 @@ export default function Navigator() {
 
   useEffect(() => {
     const fetchUnsubmitted = async () => {
-      setCount(await unsubmitted());
+      setCount(await unsubmitted(sub));
     };
 
     fetchUnsubmitted();
-  }, [isAttendancePath]);
+  }, [sub, isAttendancePath]);
 
   return (
     <nav className="w-fit">

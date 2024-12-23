@@ -126,11 +126,8 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
     const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)",  { locale: ja });
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
     const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
-    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n`;
+    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " -" : ""}${_end ? ` ${_end}` : ""}${description ? ` ${description}` : ""}\n`;
   });
-
-  let text = "新しい日程が作成されました✨\n\n";
-  text += clipboardText + "\n記入をお願いします🙇";
 
   const ids = await group();
   const client = await BotClient();
@@ -138,40 +135,45 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
     ids.map(async ({ id }) => {
       await client.pushMessage({
         to: id,
-        messages: [{
-          type: "template",
-          altText: "新しい日程が作成されました✨",
-          template: {
-            type: "buttons",
-            text,
-            actions: [
-              {
-                type: "uri",
-                label: "出欠席の選択",
-                uri: "https://newche-v2.vercel.app/attendance"
-              },
-              {
-                type: "clipboard",
-                label: "日程をコピー",
-                clipboardText
-              }
-            ]
+        messages: [
+          {
+            type: "template",
+            altText: "新しい日程が作成されました✨",
+            template: {
+              type: "buttons",
+              text: "新しい日程が作成されました✨\n記入をお願いします🙇",
+              actions: [
+                {
+                  type: "uri",
+                  label: "出欠席の選択",
+                  uri: "https://newche-v2.vercel.app/attendance"
+                },
+                {
+                  type: "clipboard",
+                  label: "日程をコピー",
+                  clipboardText
+                }
+              ]
+            }
+          },
+          {
+            type: "textV2",
+            text: clipboardText
           }
-        }]
+        ]
       });
     })
   );
 }
 
 export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
-  let text = "日程が更新されました🛠️\n\n";
+  let clipboardText = "";
   schedule.forEach(({ date, start, end, description }) => {
     const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja });
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
     const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
-    text += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}${description ? ` ${description}` : ""}\n`;
+    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " -" : ""}${_end ? ` ${_end}` : ""}${description ? ` ${description}` : ""}\n`;
   });
-  text += "\n確認をお願いします🙇";
 
   const ids = await group();
   const client = await BotClient();
@@ -179,19 +181,32 @@ export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
     ids.map(async ({ id }) => {
       await client.pushMessage({
         to: id,
-        messages: [{
-          type: "template",
-          altText: "日程が更新されました🛠️",
-          template: {
-            type: "buttons",
-            text,
-            actions: [{
-              type: "uri",
-              label: "出欠席の選択",
-              uri: "https://newche-v2.vercel.app/attendance"
-            }]
+        messages: [
+          {
+            type: "template",
+            altText: "日程が更新されました🛠️",
+            template: {
+              type: "buttons",
+              text: "日程が更新されました🛠️\n確認をお願いします🙇",
+              actions: [
+                {
+                  type: "uri",
+                  label: "出欠席の選択",
+                  uri: "https://newche-v2.vercel.app/attendance"
+                },
+                {
+                  type: "clipboard",
+                  label: "日程をコピー",
+                  clipboardText
+                }
+              ]
+            }
+          },
+          {
+            type: "textV2",
+            text: clipboardText
           }
-        }]
+        ]
       });
     })
   );

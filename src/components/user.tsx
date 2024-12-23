@@ -1,11 +1,9 @@
-import { session } from "@/lib/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { redirect } from "next/navigation";
 
-export default async function User() {
-  const { name, picture } = await session();
-  if (!name) return redirect("/login");
-
+export default async function User({ name, picture }: {
+  name: string;
+  picture: string | undefined;
+}) {
   return (
     <Avatar>
       <AvatarImage src={picture} alt="avatar" />
