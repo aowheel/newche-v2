@@ -158,12 +158,12 @@ export default function ViewSchedule({ row }: {
                 className="[writing-mode:vertical-rl] flex justify-center rounded bg-green-500 text-white"
               >出席</div>
               <div
-                className="flex flex-wrap gap-1"
+                className="flex flex-wrap gap-2"
               >
                 {present.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 font-medium text-slate-900"
+                    className="flex items-center gap-x-1 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -180,12 +180,12 @@ export default function ViewSchedule({ row }: {
                 className="[writing-mode:vertical-rl] flex justify-center rounded bg-red-500 text-white"
               >欠席</div>
               <div
-                className="flex flex-wrap gap-1"
+                className="flex flex-wrap gap-2"
               >
                 {absent.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 font-medium text-slate-900"
+                    className="flex items-center gap-x-1 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -202,12 +202,12 @@ export default function ViewSchedule({ row }: {
                 className="[writing-mode:vertical-rl] flex justify-center rounded bg-yellow-500 text-white"
               >遅刻</div>
               <div
-                className="flex flex-wrap gap-1"
+                className="flex flex-wrap gap-2"
               >
                 {late.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 font-medium text-slate-900"
+                    className="flex items-center gap-x-1 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
@@ -224,12 +224,12 @@ export default function ViewSchedule({ row }: {
                 className="[writing-mode:vertical-rl] flex justify-center rounded bg-gray-500 text-white"
               >未定</div>
               <div
-                className="flex flex-wrap gap-1"
+                className="flex flex-wrap gap-2"
               >
                 {undecided.map(({ name, picture }, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-x-2 font-medium text-slate-900"
+                    className="flex items-center gap-x-1 font-medium text-slate-900"
                   >
                     <Avatar>
                       <AvatarImage src={picture} alt="avatar" />
