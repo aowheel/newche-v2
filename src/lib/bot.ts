@@ -40,7 +40,7 @@ async function token() {
   }
 }
 
-async function BotClient() {
+export async function BotClient() {
   const channelAccessToken = await token();
   return new MessagingApiClient({ channelAccessToken });
 }
@@ -239,33 +239,36 @@ export async function notifyAt20() {
         const validPresents = (
           await Promise.all(
             presents.map(async ({ userId }) => {
-              const { httpResponse } = await client.getGroupMemberProfileWithHttpInfo(groupId, userId);
-              if (httpResponse.status === 200) {
+              try {
+                await client.getGroupMemberProfile(groupId, userId);
                 return userId;
+              } catch {
+                return null;
               }
-              return null;
             })
           )
         ).filter(userId => userId !== null);
         const validLates = (
           await Promise.all(
             lates.map(async ({ userId }) => {
-              const { httpResponse } = await client.getGroupMemberProfileWithHttpInfo(groupId, userId);
-              if (httpResponse.status === 200) {
+              try {
+                await client.getGroupMemberProfile(groupId, userId);
                 return userId;
+              } catch {
+                return null;
               }
-              return null;
             })
           )
         ).filter(userId => userId !== null);
         const validUndecideds = (
           await Promise.all(
             undecideds.map(async ({ userId }) => {
-              const { httpResponse } = await client.getGroupMemberProfileWithHttpInfo(groupId, userId);
-              if (httpResponse.status === 200) {
+              try {
+                await client.getGroupMemberProfile(groupId, userId);
                 return userId;
+              } catch {
+                return null;
               }
-              return null;
             })
           )
         ).filter(userId => userId !== null);
@@ -305,7 +308,7 @@ export async function notifyAt20() {
         if (validUndecideds.length > 0) {
           text += "\n\n未定: ";
           validUndecideds.forEach((userId, idx) => {
-            text += `{undecoded${idx}} `;
+            text += `{undecided${idx}} `;
             substitution[`undecided${idx}`] = {
               type: "mention",
               mentionee: {
