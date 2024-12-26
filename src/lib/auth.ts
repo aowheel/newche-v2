@@ -26,17 +26,13 @@ export interface User {
 
 const sessionOptions: SessionOptions = {
   password: process.env.IRON_SESSION_SECRET!,
-  cookieName: "session",
-  cookieOptions: {
-    secure: true,
-    maxAge: 60*60*24*365,
-  },
+  cookieName: "session"
 }
 
 export async function ironSession() {
   const cookieStore = await cookies();
 
-  return await getIronSession<User>(cookieStore, sessionOptions);
+  return getIronSession<User>(cookieStore, sessionOptions);
 }
 
 export async function session() {
