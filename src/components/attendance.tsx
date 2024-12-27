@@ -1,4 +1,4 @@
-import { session } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { personalAttendance, scheduleFromNow } from "@/lib/data";
 import SubmitAttendance from "./selector";
 import { formatInTimeZone } from "date-fns-tz";
@@ -7,7 +7,7 @@ import { Calendar, Clock, Info } from "lucide-react";
 import clsx from "clsx";
 
 export async function PersonalAttendance() {
-  const { sub } = await session();
+  const { sub } = await getSession();
   const schedule = await scheduleFromNow();
 
   return (

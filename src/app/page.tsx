@@ -10,12 +10,12 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { session } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const { name } = await session();
+  const { name } = await getSession();
   if (name) return redirect("/view");
 
   return (

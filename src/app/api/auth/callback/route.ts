@@ -1,4 +1,4 @@
-import { ironSession, User } from "@/lib/auth";
+import { getSession, User } from "@/lib/auth";
 import { upsertUser } from "@/lib/data";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 
           await upsertUser(sub, name, picture);
 
-          const session = await ironSession();
+          const session = await getSession();
           session.sub = sub;
           session.name = name;
           session.picture = picture;

@@ -1,6 +1,6 @@
 import Navigator from "@/components/navigator";
 import User from "@/components/user";
-import { session } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 
@@ -9,7 +9,7 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode
 }) {
-  const { sub, name, picture } = await session();
+  const { sub, name, picture } = await getSession();
   if (!name) return redirect("/login");
 
   return (
