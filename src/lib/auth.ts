@@ -26,7 +26,8 @@ export interface User {
 
 const sessionOptions: SessionOptions = {
   password: process.env.IRON_SESSION_SECRET!,
-  cookieName: "session"
+  cookieName: "session",
+  ttl: 60 * 60 * 24 * 365
 }
 
 export async function getSession() {
