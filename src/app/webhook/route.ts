@@ -1,5 +1,6 @@
-import { follow, join, memberJoined } from "@/lib/bot";
+import { follow, join, memberJoined, notifyNextWeekSchedule } from "@/lib/bot";
 import { createGroup, deleteGroup } from "@/lib/data";
+import { WebhookEvent } from "@line/bot-sdk";
 import crypto from "crypto";
 
 export async function POST(req: Request) {
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { events } = await JSON.parse(body);
+  const { events }: { events: WebhookEvent[] } = await JSON.parse(body);
 
   for (const event of events) {
     if (event.type === "follow") {
@@ -33,6 +34,14 @@ export async function POST(req: Request) {
     } else if (event.type === "memberJoined") {
       if (event.source.type === "group") {
         await memberJoined(event.replyToken, event.joined.members);
+      }
+    } else if (event.type === "message") {
+      if (
+        event.source.type === "group"
+          && event.message.type === "text"
+          && event.message.mention?.mentionees.some((m: any) => m?.isSelf)
+      ) {
+        await notifyNextWeekSchedule(event.replyToken);
       }
     }
   }
