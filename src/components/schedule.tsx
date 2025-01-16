@@ -487,7 +487,7 @@ export function NewSchedule() {
       </Table>
       <datalist id="datalist">
         <option value="09:00" />
-        <option value="12:30" />
+        <option value="12:15" />
         <option value="17:00" />
         <option value="18:00" />
         <option value="21:00" />

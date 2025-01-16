@@ -1,4 +1,4 @@
-import { notifyAt20 } from "@/lib/bot";
+import { notifyNextWeekSchedule } from "@/lib/bot";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  await notifyAt20();
+  await notifyNextWeekSchedule();
 
   return new Response(null, { status: 200 });
 }

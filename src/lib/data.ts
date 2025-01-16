@@ -33,6 +33,19 @@ export async function scheduleOnDate(date: Date) {
   });
 }
 
+export async function scheduleWithinTimeFrame(gte: Date, lt: Date) {
+  return await prisma.schedule.findMany({
+    where: {
+      date: { gte, lt }
+    },
+    orderBy: [
+      { date: "asc" },
+      { end: { sort: "asc", nulls: "first" } },
+      { start: { sort: "asc", nulls: "first" } }
+    ]
+  });
+}
+
 export async function scheduleFromNow() {
   let _gte = formatInTimeZone(new Date(), "Asia/Tokyo", "yyyy-MM-dd");
   _gte += "T00:00+09:00";

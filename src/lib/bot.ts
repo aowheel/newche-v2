@@ -9,6 +9,7 @@ import {
   Schedule,
   scheduleOnDate,
   ScheduleWithId,
+  scheduleWithinTimeFrame,
   undecided
 } from "./data";
 import { formatInTimeZone } from "date-fns-tz";
@@ -122,11 +123,14 @@ export async function memberJoined(
 
 export async function notifyCreatedSchedule(schedule: Schedule[]) {
   let clipboardText = "";
-  schedule.forEach(({ date, start, end, description }) => {
+  schedule.forEach(({ date, start, end, description }, idx) => {
     const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)",  { locale: ja });
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
     const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
-    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " -" : ""}${_end ? ` ${_end}` : ""}${description ? ` ${description}` : ""}\n`;
+    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " -" : ""}${_end ? ` ${_end}` : ""}${description ? ` ${description}` : ""}`;
+    if (idx !== schedule.length - 1) {
+      clipboardText += "\n";
+    }
   });
 
   const ids = await group();
@@ -168,11 +172,14 @@ export async function notifyCreatedSchedule(schedule: Schedule[]) {
 
 export async function notifyUpdatedSchedule(schedule: ScheduleWithId[]) {
   let clipboardText = "";
-  schedule.forEach(({ date, start, end, description }) => {
+  schedule.forEach(({ date, start, end, description }, idx) => {
     const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja });
     const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
     const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
-    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " -" : ""}${_end ? ` ${_end}` : ""}${description ? ` ${description}` : ""}\n`;
+    clipboardText += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " -" : ""}${_end ? ` ${_end}` : ""}${description ? ` ${description}` : ""}`;
+    if (idx !== schedule.length - 1) {
+      clipboardText += "\n";
+    }
   });
 
   const ids = await group();
@@ -393,13 +400,86 @@ export async function notifyAt20() {
   }
 }
 
+export async function notifyNextWeekSchedule(replyToken?: string) {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  const tommorow = formatInTimeZone(date, "Asia/Tokyo", "yyyy-MM-dd");
+  const gte = new Date(tommorow + "T00:00+09:00");
+  date.setDate(date.getDate() + 8);
+  const nextMonday = formatInTimeZone(date, "Asia/Tokyo", "yyyy-MM-dd");
+  const lt = new Date(nextMonday + "T00:00+09:00");
+
+  const schedule = await scheduleWithinTimeFrame(gte, lt);
+
+  const count = await Promise.all(schedule.map(({ id }) => countPresentOrLate(id)));
+
+  let text = "来週の日程と現時点での参加者数はこちらです📅\n\n";
+  schedule.forEach(({ date, start, end, description }, idx) => {
+    const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja });
+    const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
+    const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
+    text += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}\n`;
+    text += description ? `${description}\n` : "";
+    text += `... ${count[idx]}人`;
+    if (idx !== schedule.length - 1) {
+      text += "\n\n";
+    }
+  });
+
+  const messages: messagingApi.Message[] = [
+    {
+      type: "textV2",
+      text
+    },
+    {
+      type: "template",
+      altText: "未定の方や変更がある場合はこちらから👇",
+      template: {
+        type: "buttons",
+        text: "未定の方や変更がある場合はこちらから👇",
+        actions: [
+          {
+            type: "uri",
+            label: "出欠席の選択",
+            uri: "https://newche-v2.vercel.app/attendance"
+          },
+          {
+            type: "uri",
+            label: "日程の一覧",
+            uri: "https://newche-v2.vercel.app/view"
+          }
+        ]
+      }
+    }
+  ];
+
+  const ids = await group();
+  const client = await BotClient();
+
+  if (replyToken) {
+    await client.replyMessage({
+      replyToken,
+      messages
+    });
+  } else {
+    await Promise.all(
+      ids.map(async ({ id }) => {
+        await client.pushMessage({
+          to: id,
+          messages
+        });
+      })
+    );
+  }
+}
+
 export async function groupDetail() {
   const ids = await group();
   const client = await BotClient();
-  return  Promise.all(
+  return Promise.all(
     ids.map(async ({ id }) => {
-    const { groupName, pictureUrl } = await client.getGroupSummary(id);
-    return { groupName, pictureUrl };
+      const { groupName, pictureUrl } = await client.getGroupSummary(id);
+      return { groupName, pictureUrl };
     })
   );
 }

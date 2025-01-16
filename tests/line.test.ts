@@ -1,10 +1,11 @@
 import { BotClient } from "@/lib/bot";
-import { countPresentOrLate, group, late, present, scheduleOnDate, undecided } from "@/lib/data";
+import { countPresentOrLate, group, late, present, scheduleOnDate, scheduleWithinTimeFrame, undecided } from "@/lib/data";
 import { formatInTimeZone } from "date-fns-tz";
+import { ja } from "date-fns/locale";
 import { describe, it } from "vitest";
 
 describe("Line Messaging Api", () => {
-  it("should notify tommmorow schedule", async () => {
+  it("should notify tommorow schedule", async () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const value = formatInTimeZone(tomorrow, "Asia/Tokyo", "yyyy-MM-dd");
@@ -199,5 +200,71 @@ describe("Line Messaging Api", () => {
       //   })
       // );
     }
+  });
+
+  it("should notify on Sunday", async () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    const tommorow = formatInTimeZone(date, "Asia/Tokyo", "yyyy-MM-dd");
+    const gte = new Date(tommorow + "T00:00+09:00");
+    date.setDate(date.getDate() + 15);
+    const nextMonday = formatInTimeZone(date, "Asia/Tokyo", "yyyy-MM-dd");
+    const lt = new Date(nextMonday + "T00:00+09:00");
+
+    const schedule = await scheduleWithinTimeFrame(gte, lt);
+
+    const count = await Promise.all(schedule.map(({ id }) => countPresentOrLate(id)));
+
+    let text = "来週の日程と現時点での参加者数はこちらです📅\n\n";
+    schedule.forEach(({ date, start, end, description }, idx) => {
+      const _date = formatInTimeZone(date, "Asia/Tokyo", "MM/dd (eee)", { locale: ja });
+      const _start = start ? formatInTimeZone(start, "Asia/Tokyo", "HH:mm") : undefined;
+      const _end = end ? formatInTimeZone(end, "Asia/Tokyo", "HH:mm") : undefined;
+      text += `${_date}${_start ? ` ${_start}` : ""}${(_start || _end) ? " - " : ""}${_end ? `${_end}` : ""}\n`;
+      text += description ? `${description}\n` : "";
+      text += `... ${count[idx]}人`;
+      if (idx !== schedule.length - 1) {
+        text += "\n\n";
+      }
+    });
+
+    console.log("Text: ", text);
+
+    // const ids = await group();
+    // const client = await BotClient();
+
+    // await Promise.all(
+    //   ids.map(async ({ id }) => {
+    //     await client.pushMessage({
+    //       to: id,
+    //       messages: [
+    //         {
+    //           type: "textV2",
+    //           text
+    //         },
+    //         {
+    //           type: "template",
+    //           altText: "未定の方や変更がある場合はこちらから👇",
+    //           template: {
+    //             type: "buttons",
+    //             text: "未定の方や変更がある場合はこちらから👇",
+    //             actions: [
+    //               {
+    //                 type: "uri",
+    //                 label: "出欠席の選択",
+    //                 uri: "https://newche-v2.vercel.app/attendance"
+    //               },
+    //               {
+    //                 type: "uri",
+    //                 label: "日程の一覧",
+    //                 uri: "https://newche-v2.vercel.app/view"
+    //               }
+    //             ]
+    //           }
+    //         }
+    //       ]
+    //     })
+    //   })
+    // );
   });
 });
